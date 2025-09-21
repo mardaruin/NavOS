@@ -16,6 +16,7 @@ all: clean build test
 boot.img: .tmp/boot.bin
 	dd if=/dev/zero of=boot.img bs=1024 count=1440
 	dd if=.tmp/boot.bin of=boot.img conv=notrunc
+	echo 'hello world again' | dd of=boot.img bs=1 seek=512 conv=notrunc
 
 build: boot.img
 
