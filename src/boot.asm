@@ -1,5 +1,6 @@
 [BITS 16]
 
+
 start:                                        
   cli   
   xor ax, ax   
@@ -11,7 +12,7 @@ start:
   mov es, di              ; ES=DI (адрес, куда будем загружать данные)
   xor bx, bx              ; BX=0x0000 (смещение внутри сегмента)
 
-  mov di, NUMBER_OF_SECTORS
+  mov si, NUMBER_OF_SECTORS
 
   mov al, 1               ;1 sector
   xor ch, ch              ;0 cylinder
@@ -24,7 +25,7 @@ read_loop:
 
   jc disk_read_failed
 
-  dec di
+  dec si
   jz read_end
 
   inc cl
@@ -67,8 +68,7 @@ print_string:
 
 read_end:
   mov si, success_msg
-  call print_string
-  
+  call print_string  
 
 
 
@@ -81,7 +81,7 @@ read_end:
   or eax, 1       ; устанавливаем флаг PE
   mov cr0, eax
   
-  jmp code_segment:(code_start)      ; дальний прыжок
+  jmp 0x8:code_start      ; дальний прыжок
 
 align 8       ; выравнивание
 gdt_descriptor:
@@ -111,8 +111,7 @@ data_segment equ 0x10
 
 
 [BITS 32]
-
-extern kernel_entry
+                   
 
 code_start:
   mov ax, data_segment
@@ -122,6 +121,7 @@ code_start:
   mov fs, ax
   mov gs, ax
 
+  extern kernel_entry
   call kernel_entry
 
   hlt
