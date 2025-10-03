@@ -8,17 +8,16 @@ start:
 	mov ds, ax              ; DS=0x0000 (data segment)
 	mov sp, 0x7C00          ; SP=0x07C0 (stack pointer)
 
-	mov di, 0x7E00          ; DI=0x7E0 (целевой сегмент)
+	mov di, 0x7E0           ; DI=0x7E0 (целевой сегмент)
 	mov es, di              ; ES=DI (адрес, куда будем загружать данные)
 	xor bx, bx              ; BX=0x0000 (смещение внутри сегмента)
 
-	mov cx, NUMBER_OF_SECTORS
+	mov di, NUMBER_OF_SECTORS
 
 	mov al, 1               ;1 sector
-	mov ch, 0               ;0 cylinder
+	xor ch, ch              ;0 cylinder
 	mov cl, 2               ;2 sector (after loader)
-	mov dh, 0               ;head 0
-	mov dl, 0               ;fda
+	xor dh, dh              ;head 0
 
 read_loop:
 	mov ah, 0x02            ; bios функция для чтения с диска
@@ -28,7 +27,7 @@ read_loop:
 
 	add bx, 512
 	inc cl 
-	cmp cx, 0
+	dec di
 	jne read_loop
 
 	mov si, success_msg
@@ -59,7 +58,7 @@ print_string:
 	popa
 	ret
 
-NUMBER_OF_SECTORS equ 1
+NUMBER_OF_SECTORS equ 2
 
 success_msg db 'Data successfully loaded', 0
 error_msg db 'Disk read error.', 0
