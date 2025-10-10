@@ -27,6 +27,9 @@ read_loop:
 
   dec di
   jz read_end
+	mov si, es
+	add si, 0x20
+	mov es, si
 
   inc cl
   cmp cl, MAX_SECTORS

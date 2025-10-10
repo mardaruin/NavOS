@@ -20,16 +20,7 @@ all: clean build test
 
 .tmp/boot.bin: src/boot.asm
 	$(NASM) src/boot.asm -o .tmp/boot.bin
-
-#.tmp/main.o: src/main.c
-#	$(GCC) $(GCC_FLAGS) -c src/main.c -o .tmp/main.o
-                                                               
-#.tmp/os.elf: .tmp/boot.o .tmp/main.o link.ld
-#	ld -m elf_i386 -s .tmp/main.o .tmp/boot.o -T link.ld -o .tmp/os.elf
-
-#.tmp/os.bin: .tmp/os.elf
-#	objcopy -I elf32-i386 -O binary .tmp/os.elf .tmp/os.bin
-
+                                                                
 
 
 
@@ -41,6 +32,10 @@ boot.img: .tmp/boot.bin
 
 build: boot.img
 
+dump:                                                                 
+	qemu-system-i386 -cpu pentium2 -m 1g -fda boot.img -monitor stdio -device VGA
+# -dump-guest-core dump.bin
+
 clean:
 	rm -f *.img
 	rm -rf .tmp
@@ -49,6 +44,7 @@ clean:
 debug: build
 	qemu-system-i386 -cpu pentium2 -m 1g -fda boot.img -monitor stdio -device VGA -s -S &
 	gdb
+	target remote localhost:1234
 
 test: build
 	qemu-system-i386 -cpu pentium2 -m 1g -fda boot.img -monitor stdio -device VGA -display gtk
