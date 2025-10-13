@@ -132,7 +132,7 @@ code_start:
   hlt
   jmp $
 
-NUMBER_OF_SECTORS equ 200
+NUMBER_OF_SECTORS equ 400
 MAX_SECTORS equ 18
 MAX_HEADS equ 1
 MAX_CYLINDERS equ 79
