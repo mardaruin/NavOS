@@ -28,6 +28,10 @@ read_loop:
   dec si
   jz read_end
 
+  mov di, es
+  add di, 0x20
+  mov es, di
+
   inc cl
   cmp cl, MAX_SECTORS
   jle read_loop
@@ -101,8 +105,9 @@ gdt:
   dw 0xffff
   dw 0
   db 0
-  db 0b10011010
+  db 0b10010010
   db 0b11001111
+  db 0x0
 gdt_end:
 
 null_segment equ 0
