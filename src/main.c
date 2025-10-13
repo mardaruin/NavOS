@@ -1,14 +1,15 @@
-#include <stdint.h>
-                                                                         
-void clear_screen() {
-    volatile uint16_t* video_memory = (uint16_t*)0xB8000;
-    
-    for(int i = 0; i < 25; ++i) {
-        video_memory[4 * i] = (' ');
-    }
-}
+#include "vga.h"
+#include "memory.h"
+#include "panic.h"
+#include "alloc.h"
+#include "printer.h"
+#include "assert.h"
+#include "types.h"
 
-void kernel_entry(void) {
-    clear_screen();
-    while(1);
+void kernel_entry() {
+    init_printer();
+    while (1) {
+        void* ptr = malloc_undead(100, 4);
+        printf("Allocated at %p\n", ptr);
+    }
 }
