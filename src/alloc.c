@@ -2,6 +2,7 @@
 #include "panic.h"
 #include "alloc.h"
 #include "memory.h"
+#include "printer.h"
 
 #define ARENA_START 0x7C00
 #define ARENA_SIZE 0x80000
@@ -9,7 +10,9 @@
 static uint8_t* arena = (uint8_t*)ARENA_START;
 
 void* malloc_undead(size_t size, size_t alignment) {
-	size_t alligned_size = (size + alignment -1) & ~(alignment - 1);
+	size_t alligned_size = 128; 
+//(size + alignment - 1) / (alignment);
+	printf("Allocating block size %d\n", (int)alligned_size);
 	if ((uintptr_t)arena + alligned_size > (uintptr_t)ARENA_SIZE + ARENA_START) {
 		kernel_panic("Out of memory");
 	}
