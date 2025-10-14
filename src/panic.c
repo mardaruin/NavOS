@@ -8,8 +8,10 @@ void cli() {
 
 void vkernel_panic(const char* fmt, va_list args) {
 	cli();
-	printf("Kernel panic: ");
+	printf("Kernel panic:\n");
+	scroll_if_needed();
 	vprintf(fmt, args);
+	scroll_if_needed();
 	while(1);
 }
 

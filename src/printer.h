@@ -1,7 +1,8 @@
 #ifndef PRINTER_H
 #define PRINTER_H
 
-#include "vargs.h"
+//#include "vargs.h"
+#include <stdarg.h>
 #include "string.h"
                     
 extern char* itoa(int value, char* str, int base);

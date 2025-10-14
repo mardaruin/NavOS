@@ -5,16 +5,19 @@
 #include "printer.h"
 
 #define ARENA_START 0x7C00
-#define ARENA_SIZE 0x80000
+#define ARENA_SIZE 0x8000
 
 static uint8_t* arena = (uint8_t*)ARENA_START;
 
 void* malloc_undead(size_t size, size_t alignment) {
-	size_t alligned_size = 128; 
-//(size + alignment - 1) / (alignment);
-	printf("Allocating block size %d\n", (int)alligned_size);
-	if ((uintptr_t)arena + alligned_size > (uintptr_t)ARENA_SIZE + ARENA_START) {
-		kernel_panic("Out of memory");
+	size_t alligned_size = size;    
+	if (size % alignment != 0){
+		alligned_size = ((size / alignment) + 1) * alignment;
+	}
+	printf("Allocating block size %z\n", alligned_size);
+	scroll_if_needed();
+	if ((uintptr_t)arena + alligned_size > (uintptr_t)(ARENA_SIZE + ARENA_START)) {
+		kernel_panic("Kolobok hanged himself.");
 	}
 	void* ptr = arena;
 	arena += alligned_size;

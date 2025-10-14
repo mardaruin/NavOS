@@ -2,6 +2,9 @@
 #include "vga.h"
 #include "printer.h"
 
+#define SCREEN_HEIGHT 25
+#define SCREEN_WIDE 80
+
 static size_t screen_x_pos = 0;
 static size_t screen_y_pos = 0;
 
@@ -84,13 +87,11 @@ void vprintf(const char* fmt, va_list args) {
         	} else {
             		vga_print_char(*p, screen_x_pos, screen_y_pos);
             		screen_x_pos++;
-            		if (screen_x_pos >= 80) {
+            		if (screen_x_pos >= SCREEN_WIDE) {
                 		screen_x_pos = 0;
                 		screen_y_pos++;
-                		if (screen_y_pos >= 25) {
-                    			vga_scroll_down();
-                    			screen_y_pos = 24;
-                		}
+                		scroll_if_needed();
+			
             		}
         	}
     	}
