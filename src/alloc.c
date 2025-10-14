@@ -9,7 +9,7 @@
 static uint8_t* arena = (uint8_t*)ARENA_START;
 
 void* malloc_undead(size_t size, size_t alignment) {
-	size_t alligned_size = (size + alignment -1) & (alignment - 1);
+	size_t alligned_size = (size + alignment -1) & ~(alignment - 1);
 	if ((uintptr_t)arena + alligned_size > (uintptr_t)ARENA_SIZE + ARENA_START) {
 		kernel_panic("Out of memory");
 	}

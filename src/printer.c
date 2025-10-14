@@ -1,12 +1,22 @@
-#include <stdarg.h>
 #include "types.h"
 #include "vga.h"
 #include "printer.h"
+
+static size_t screen_x_pos = 0;
+static size_t screen_y_pos = 0;
 
 
 void init_printer() {
 	vga_clear_screen();	
 }
+
+void scroll_if_needed() {
+    if (screen_y_pos >= 25) {          
+        vga_scroll_down();
+        screen_y_pos -= 1;
+    }
+}
+
 
 void vprintf(const char* fmt, va_list args) {
 	char buffer[1024];
@@ -35,11 +45,23 @@ void vprintf(const char* fmt, va_list args) {
 					break;
 				}
 				case 's': {
-					const char value = (char)va_arg(args, int);
+					const char* value = va_arg(args, const char*);
 					while (*value) {
 						*buf_ptr++ = *value++;
 					}
 					break;
+				}
+				case 'z': {
+                    			size_t value = va_arg(args, size_t);
+                    			uitoa(value, buf_ptr, 10);
+                    			buf_ptr += strlen(buf_ptr);
+                    			break;
+                		}
+				case 'p': {
+					const void* value = va_arg(args, const void*);
+					ptoa(value, buf_ptr);
+					buf_ptr += strlen(buf_ptr);
+					break; 
 				}
 				default:                         
 					*buf_ptr = *fmt;
@@ -52,23 +74,22 @@ void vprintf(const char* fmt, va_list args) {
 		fmt++;
 	}
 	*buf_ptr++ = '\0';
-
-	size_t x = 0, y = 0;
+                            
 	for (const char* p = buffer; *p; ++p) {
         	if (*p == '\n') {
-            		y++;
-            		x = 0;
+            		screen_y_pos ++;
+            		screen_x_pos = 0;
         	} else if (*p == '\r') {
-            		x = 0;
+            		screen_x_pos = 0;
         	} else {
-            		vga_print_char(*p, x, y);
-            		x++;
-            		if (x >= 80) {
-                		x = 0;
-                		y++;
-                		if (y >= 25) {
+            		vga_print_char(*p, screen_x_pos, screen_y_pos);
+            		screen_x_pos++;
+            		if (screen_x_pos >= 80) {
+                		screen_x_pos = 0;
+                		screen_y_pos++;
+                		if (screen_y_pos >= 25) {
                     			vga_scroll_down();
-                    			y = 24;
+                    			screen_y_pos = 24;
                 		}
             		}
         	}
