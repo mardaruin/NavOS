@@ -1,4 +1,6 @@
-#include <stdint.h>
+#include "types.h"
+
+extern void halt_and_wait();
                                                                          
 void clear_screen() {
     volatile uint16_t* video_memory = (uint16_t*)0xB8000;
@@ -10,5 +12,5 @@ void clear_screen() {
 
 void kernel_entry(void) {
     clear_screen();
-    while(1);
+    halt_and_wait();
 }

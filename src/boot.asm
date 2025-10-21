@@ -52,6 +52,7 @@ disk_read_failed:
   call print_string
   jmp halt_and_wait
 
+global halt_and_wait
 halt_and_wait:
   hlt
   jmp halt_and_wait
@@ -75,19 +76,17 @@ read_end:
   call print_string  
 
 
-
-
   lgdt [gdt_descriptor]
   cld
 
   ; включаем защиту и переводим в защищенный режим
   mov eax, cr0
-  or eax, 1       ; устанавливаем флаг PE
+  or eax, 1               ; устанавливаем флаг PE
   mov cr0, eax
   
   jmp 0x8:code_start      ; дальний прыжок
 
-align 8       ; выравнивание
+align 8                   ; выравнивание
 gdt_descriptor:
   dw gdt_end - gdt - 1    ; размер таблицы gdt - 1
   dd gdt                  ; лин адрес самой таблицы
@@ -102,12 +101,12 @@ gdt:
   db 0b11001111           ; granularity byte - g=1, db=1, l=0, avl=0, high bits of the limit=1111 
   db 0                    ; high base address
 ; сегмент данных
-  dw 0xffff
-  dw 0
-  db 0
-  db 0b10010010
-  db 0b11001111
-  db 0x0
+  dw 0xffff               ; low limit - максимальный размер сегмента
+  dw 0                    ; low base address
+  db 0                    ; middle base address
+  db 0b10010010           ; access bytes - p=1, dpl=00, s=1, type=0010
+  db 0b11001111           ; granularity byte - g=1, db=1, l=0, avl=0, high bits of the limit=1111
+  db 0x0                  ; high base address
 gdt_end:
 
 null_segment equ 0
@@ -119,6 +118,7 @@ data_segment equ 0x10
                    
 
 code_start:
+; Загрузка нового значения для DS, SS, ES, FS, GS
   mov ax, data_segment
   mov ds, ax
   mov ss, ax
