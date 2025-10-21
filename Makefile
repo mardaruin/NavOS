@@ -21,21 +21,15 @@ all: clean build test
 .tmp/boot.bin: src/boot.asm
 	$(NASM) src/boot.asm -o .tmp/boot.bin
                                                                 
-
-
-
 boot.img: .tmp/boot.bin
 	dd if=/dev/zero of=boot.img bs=1024 count=1440
 	dd if=.tmp/boot.bin of=boot.img conv=notrunc
-	cat random_big_file.txt | dd of=boot.img bs=1 seek=512 conv=notrunc
-	#echo 'hello world again' | dd of=boot.img bs=1 seek=512 conv=notrunc
+	cat random_big_file.txt | dd of=boot.img bs=1 seek=512 conv=notrunc  
 
 build: boot.img
 
 dump:                                                                 
-	qemu-system-i386 -cpu pentium2 -m 1g -fda boot.img -monitor stdio -device VGA
-# -dump-guest-core dump.bin
-
+	qemu-system-i386 -cpu pentium2 -m 1g -fda boot.img -monitor stdio -device VGA     
 clean:
 	rm -f *.img
 	rm -rf .tmp
