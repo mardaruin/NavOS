@@ -24,33 +24,5 @@ static size_t screen_y_pos = 0;
 
 
 void main() {
-	init_printer();
-
-	printf("Memory allocation starts at address: %p\n", (void*)START_ADDR);
-
-	int itarration_count = 0;
-	bool out_of_memory = false;
-
-	while (1) {
-		//for(int i = 0; i < 100; i++) {                          
-			size_t size = BLOCK_SIZE;
-			size_t align = ALIGNMENT_VALUE;
-
-			void* ptr = malloc_undead(size, align);
-
-			if(ptr) {
-				printf("Allocated block of size %z bytes at address %p aligned by %z.\n", size, ptr, align);
-
-				
-				screen_y_pos++;
-                		scroll_if_needed();
-
-				assert(((uintptr_t)ptr % align == 0));   
-				//DELAY_MS(2);                                     
-			} else {
-				kernel_panic("Out of memory!");
-			}
-		//}
-			 
-	}
+	kernel_panic("Out of memory!");
 }                       

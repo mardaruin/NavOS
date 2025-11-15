@@ -4,8 +4,7 @@
 #include "memory.h"
 #include "printer.h"
 
-#define ARENA_START 0x7C00
-#define ARENA_SIZE 0x8000
+#define ARENA_START 0x7C00  
 
 static uint8_t* arena = (uint8_t*)ARENA_START;
 

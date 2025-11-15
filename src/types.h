@@ -20,4 +20,10 @@ typedef unsigned long size_t;
 #define KERNEL_SIZE 0x10000
 #define ARENA_SIZE 0x80000
 
+#define TRAP_GATE_TYPE 0x8F
+#define INTR_GATE_TYPE 0x8E
+
+#define CODE_SEGMENT 0x08
+#define DATA_SEGMENT 0x10
+
 #endif

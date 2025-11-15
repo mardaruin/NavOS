@@ -77,6 +77,9 @@ read_end:
 
 
 
+  extern kernel_entry
+  call kernel_entry
+
   lgdt [gdt_descriptor]
   cld
 
@@ -84,6 +87,8 @@ read_end:
   mov eax, cr0
   or eax, 1       ; устанавливаем флаг PE
   mov cr0, eax
+
+  
   
   jmp 0x8:code_start      ; дальний прыжок
 
@@ -126,10 +131,35 @@ code_start:
   mov fs, ax
   mov gs, ax
 
-  extern kernel_entry
-  call kernel_entry
+  ;extern kernel_entry
+  ;call kernel_entry
 
-  hlt
+.interrupt:
+  push ds
+  push es
+  push fs
+  push gs
+  pusha
+
+  cld
+
+  mov ax, data_segment
+  mov ds, ax
+  mov ss, ax
+  mov es, ax
+  mov fs, ax
+  mov gs, ax
+
+  mov ebx, esp
+  ; align somehow
+  push ebx
+  ;extern kernel_entry
+  ;call kernel_entry
+
+  extern universal_handler
+  call universal_handler 
+
+  hlt 
   jmp $
 
 NUMBER_OF_SECTORS equ 400
