@@ -50,11 +50,11 @@ read_loop:
 disk_read_failed:
   mov si, error_msg
   call print_string
-  jmp halt_and_wait
+  jmp inf_loop
 
-halt_and_wait:
-  hlt
-  jmp halt_and_wait
+;halt_and_wait:
+;  hlt
+;  jmp halt_and_wait
 
 print_string:
   pusha
@@ -73,12 +73,7 @@ print_string:
 read_end:
   mov si, success_msg
   call print_string  
-
-
-
-
-  extern kernel_entry
-  call kernel_entry
+                 
 
   lgdt [gdt_descriptor]
   cld
@@ -87,10 +82,105 @@ read_end:
   mov eax, cr0
   or eax, 1       ; устанавливаем флаг PE
   mov cr0, eax
+  
+  jmp code_segment:code_start      ; дальний прыжок
 
+
+[BITS 32]
+code_start:
+  mov ax, data_segment
+  mov ds, ax
+  mov ss, ax
+  mov es, ax
+  mov fs, ax
+  mov gs, ax
+
+  extern kernel_entry
+  call kernel_entry
+
+global inf_loop
+inf_loop:
+  jmp inf_loop
+
+global cli
+cli:
+  cli 
+  ret
+
+global sti
+sti:
+  sti
+  ret
+
+global lidt
+lidt:
+  mov eax, dword [esp + 4]
+  lidt [eax]
+  ret
+          
+global setup_registers
+setup_registers:
+  xor eax, eax
+  mov ebx, 1
+  mov ecx, 2
+  mov edx, 3
+  mov edi, 4
+  mov esi, 5
+  mov ebp, 6
+  ret
   
-  
-  jmp 0x8:code_start      ; дальний прыжок
+global div_zero
+div_zero:
+  idiv eax
+  ret
+
+global pseudo_syscall
+pseudo_syscall:
+  int 0x21
+  ret
+     
+
+
+global collect_context
+collect_context:
+  push ds
+  push es
+  push fs
+  push gs
+  pusha
+
+  cld
+
+  mov ax, data_segment
+  mov ds, ax
+  mov ss, ax
+  mov es, ax
+  mov fs, ax
+  mov gs, ax
+
+  mov ebx, esp
+  sub esp, 4
+  and esp, -16
+  push ebx
+  ;extern kernel_entry
+  ;call kernel_entry
+
+  extern universal_handler
+  call universal_handler 
+
+  mov esp, ebx
+  popa
+  pop gs
+  pop fs
+  pop es
+  pop ss
+  pop ds
+  add esp, 8
+  iret
+
+  hlt 
+  jmp $
+
 
 align 8       ; выравнивание
 gdt_descriptor:
@@ -119,48 +209,6 @@ null_segment equ 0
 code_segment equ 0x08
 data_segment equ 0x10
 
-
-[BITS 32]
-                   
-
-code_start:
-  mov ax, data_segment
-  mov ds, ax
-  mov ss, ax
-  mov es, ax
-  mov fs, ax
-  mov gs, ax
-
-  ;extern kernel_entry
-  ;call kernel_entry
-
-.interrupt:
-  push ds
-  push es
-  push fs
-  push gs
-  pusha
-
-  cld
-
-  mov ax, data_segment
-  mov ds, ax
-  mov ss, ax
-  mov es, ax
-  mov fs, ax
-  mov gs, ax
-
-  mov ebx, esp
-  ; align somehow
-  push ebx
-  ;extern kernel_entry
-  ;call kernel_entry
-
-  extern universal_handler
-  call universal_handler 
-
-  hlt 
-  jmp $
 
 NUMBER_OF_SECTORS equ 400
 MAX_SECTORS equ 18

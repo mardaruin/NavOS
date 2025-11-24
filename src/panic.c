@@ -2,9 +2,9 @@
 #include "panic.h"
 #include "printer.h"
 
-void cli() {
-    __asm__ volatile ("cli");
-}
+//void cli() {
+//    __asm__ volatile ("cli");
+//}  
 
 void vkernel_panic(const char* fmt, va_list args) {
 	cli();

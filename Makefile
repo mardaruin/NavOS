@@ -17,42 +17,19 @@ all: clean build test
 	$(NASM) src/boot.asm -o .tmp/boot.o -dN=0xA000
                                                         
 
-.tmp/vga.o: src/vga.c
-	$(GCC) $(GCC_FLAGS) -c src/vga.c -o .tmp/vga.o
-
-.tmp/memory.o: src/memory.c
-	$(GCC) $(GCC_FLAGS) -c src/memory.c -o .tmp/memory.o
-
-.tmp/panic.o: src/panic.c
-	$(GCC) $(GCC_FLAGS) -c src/panic.c -o .tmp/panic.o
-
-.tmp/alloc.o: src/alloc.c
-	$(GCC) $(GCC_FLAGS) -c src/alloc.c -o .tmp/alloc.o
-
-.tmp/printer.o: src/printer.c
-	$(GCC) $(GCC_FLAGS) -c src/printer.c -o .tmp/printer.o
-
-.tmp/kernel_entry.o: src/kernel_entry.c
-	$(GCC) $(GCC_FLAGS) -c src/kernel_entry.c -o .tmp/kernel_entry.o
-
-.tmp/main.o: src/main.c
-	$(GCC) $(GCC_FLAGS) -c src/main.c -o .tmp/main.o
-
-.tmp/string.o: src/string.c
-	$(GCC) $(GCC_FLAGS) -c src/string.c -o .tmp/string.o
+.tmp/%.o: src/%.c
+	$(GCC) $(GCC_FLAGS) -c $< -o $@
 
 .tmp/os.elf: .tmp/boot.o .tmp/main.o link.ld
-	ld -m elf_i386 -s .tmp/main.o .tmp/boot.o .tmp/string.o .tmp/vga.o .tmp/memory.o .tmp/panic.o .tmp/alloc.o .tmp/printer.o .tmp/kernel_entry.o -T link.ld -o .tmp/os.elf
+	ld -m elf_i386 -s .tmp/boot.o .tmp/string.o .tmp/vga.o .tmp/memory.o .tmp/panic.o .tmp/alloc.o .tmp/printer.o .tmp/main.o .tmp/kernel_entry.o .tmp/interrupts.o  -T link.ld -o .tmp/os.elf
 
 .tmp/os.bin: .tmp/os.elf 
 	objcopy -I elf32-i386 -O binary .tmp/os.elf .tmp/os.bin
 	
 
-boot.img: .tmp/boot.o .tmp/string.o .tmp/vga.o .tmp/memory.o .tmp/panic.o .tmp/alloc.o .tmp/printer.o .tmp/kernel_entry.o .tmp/main.o .tmp/os.bin .tmp/os.elf   
+boot.img: .tmp/boot.o .tmp/string.o .tmp/main.o .tmp/vga.o .tmp/memory.o .tmp/panic.o .tmp/alloc.o .tmp/printer.o .tmp/kernel_entry.o .tmp/interrupts.o .tmp/os.bin .tmp/os.elf   
 	dd if=/dev/zero of=boot.img bs=1024 count=1440
-	dd if=.tmp/os.bin of=boot.img conv=notrunc
-	#dd if=random_big_file.txt of=boot.img conv=notrunc seek=512
-	#cat small_file.txt | dd of=boot.img bs=1 seek=1024 conv=notrunc
+	dd if=.tmp/os.bin of=boot.img conv=notrunc                      
 
 build: boot.img
 

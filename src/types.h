@@ -1,6 +1,11 @@
 #ifndef TYPES_H
 #define TYPE_H
 
+typedef _Bool bool;
+
+#define true 1
+#define false 0
+
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;
@@ -25,5 +30,10 @@ typedef unsigned long size_t;
 
 #define CODE_SEGMENT 0x08
 #define DATA_SEGMENT 0x10
+                                        
+extern void div_zero();
+extern void pseudo_syscall();
+extern void setup_registers();               
+extern void inf_loop();
 
 #endif

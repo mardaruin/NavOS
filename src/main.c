@@ -6,6 +6,7 @@
 #include "assert.h"
 #include "types.h"
 #include "string.h"
+#include "interrupts.h"
 #include <stdbool.h>
 
 #define START_ADDR (0x7C00 + KERNEL_SIZE)
@@ -24,5 +25,20 @@ static size_t screen_y_pos = 0;
 
 
 void main() {
-	kernel_panic("Out of memory!");
+    vga_clear_screen();
+    printf("Successfully in main\n");
+    DELAY_MS(10);
+       
+ 
+    init_idt();
+    DELAY_MS(10);
+    setup_registers();
+    DELAY_MS(10);
+
+    div_zero();
+    DELAY_MS(10);
+    // pseudo_syscall();
+    //sti();
+    
+    inf_loop();
 }                       

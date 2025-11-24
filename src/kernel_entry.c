@@ -1,7 +1,5 @@
 #include "main.h"      
-#include "types.h"
-#include "idt.h"
-
+#include "types.h" 
 void kernel_entry() {  
 	main();
 }
