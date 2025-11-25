@@ -74,7 +74,6 @@ void init_idt() {
   idtr.base = idt;
   lidt(&idtr);
 
-  printf("IDT initialized\n");
 }
 
 

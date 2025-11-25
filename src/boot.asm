@@ -122,13 +122,11 @@ lidt:
           
 global setup_registers
 setup_registers:
-  xor eax, eax
-  mov ebx, 1
+  xor eax, eax 
   mov ecx, 2
   mov edx, 3
   mov edi, 4
   mov esi, 5
-  mov ebp, 6
   ret
   
 global div_zero
