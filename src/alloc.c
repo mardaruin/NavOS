@@ -6,7 +6,7 @@
 
 #define ARENA_START 0x100000  
 
-static uint32_t* arena = (uint32_t*)ARENA_START;
+static uint8_t* arena = (uint8_t*)ARENA_START;
 
 void* malloc_undead(size_t size, size_t alignment) {
     

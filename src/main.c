@@ -28,20 +28,13 @@ void main() {
     vga_clear_screen();              
  
     init_idt();
-    DELAY_MS(10);
-    printf("\nSuccessfully inited idt\n\n");
-    scroll_if_needed();
 
     setup_registers();
-
-printf("\na. setup_regs\n\n");
-    scroll_if_needed();
-
-    div_zero();
-printf("\na. zovzero\n\n");
+                  
+    //div_zero();
                    
-    // pseudo_syscall();
-    //sti();
+    //pseudo_syscall();
+    sti();
     
     inf_loop();
  }                       

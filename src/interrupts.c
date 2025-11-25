@@ -28,20 +28,20 @@ static bool has_error_code(uint8_t v) {
 }
 
 void init_idt() {
-  uint32_t* tramplins = (uint32_t *) malloc_undead(TRAMPLIN_SIZE * VECTORS_AMOUNT, 1);       
+  uint8_t* tramplins = (uint8_t *) malloc_undead(TRAMPLIN_SIZE * VECTORS_AMOUNT, 1);       
 
   uint32_t v;
   for (v = 0; v < VECTORS_AMOUNT; v++) {                                         
     
     bool v_has_error_code = has_error_code(v);
 
-    uint32_t* tramplin = (uint32_t *)(tramplins + v * TRAMPLIN_SIZE);
+    uint8_t* tramplin = (uint8_t *)(tramplins + v * TRAMPLIN_SIZE);
     uint32_t offset = 0; 
 
     void* bridge_handler = v_has_error_code ? collect_context_without_error_code : collect_context;
           
-    tramplin[0] = 0x6a;   // push imm8
-    tramplin[1] = v;
+    tramplin[offset++] = 0x6a;   // push imm8
+    tramplin[offset++] = v;
     tramplin[offset++] = 0xe9;   // jmp                            
                                                          
     uint32_t jmp_offset = (uint32_t)bridge_handler - (uint32_t)(tramplin + offset + 4);
