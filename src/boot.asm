@@ -140,6 +140,11 @@ pseudo_syscall:
   ret
      
 
+global collect_context_without_error_code
+collect_context_without_error_code:
+  push 0
+  jmp collect_context
+
 
 global collect_context
 collect_context:
@@ -159,8 +164,9 @@ collect_context:
   mov gs, ax
 
   mov ebx, esp
-  sub esp, 4
-  and esp, -16
+  sub esp, 16
+  and esp, 0xFFFFFFF0
+  sub esp, 12
   push ebx
   ;extern kernel_entry
   ;call kernel_entry

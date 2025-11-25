@@ -26,12 +26,13 @@ static size_t screen_y_pos = 0;
 
 void main() {
     vga_clear_screen();
-    printf("Successfully in main\n");
-    DELAY_MS(10);
+    //printf("Successfully in main\n");
+    //DELAY_MS(10);
        
  
     init_idt();
     DELAY_MS(10);
+    printf("\nSuccessfully inited udt\n\n");
     setup_registers();
     DELAY_MS(10);
 

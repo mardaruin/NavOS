@@ -48,6 +48,7 @@ typedef struct {
 
 
 extern void collect_context();
+extern void collect_context_without_error_code();
 
 extern void lidt(IDT* idt_address);
 
