@@ -4,7 +4,7 @@
 # Build tools
 NASM = nasm -f elf
 GCC = gcc
-GCC_FLAGS = -std=c99 -m32 -O2 -ffreestanding -no-pie -fno-pie -mno-sse -fno-stack-protector 
+GCC_FLAGS = -g -std=c99 -m32 -O0 -ffreestanding -no-pie -fno-pie -mno-sse -fno-stack-protector 
                                              
 
 
@@ -21,7 +21,7 @@ all: clean build test
 	$(GCC) $(GCC_FLAGS) -c $< -o $@
 
 .tmp/os.elf: .tmp/boot.o .tmp/main.o link.ld
-	ld -m elf_i386 -s .tmp/boot.o .tmp/string.o .tmp/vga.o .tmp/memory.o .tmp/panic.o .tmp/alloc.o .tmp/printer.o .tmp/main.o .tmp/kernel_entry.o .tmp/interrupts.o  -T link.ld -o .tmp/os.elf
+	ld -m elf_i386 .tmp/boot.o .tmp/string.o .tmp/vga.o .tmp/memory.o .tmp/panic.o .tmp/alloc.o .tmp/printer.o .tmp/main.o .tmp/kernel_entry.o .tmp/interrupts.o  -T link.ld -o .tmp/os.elf
 
 .tmp/os.bin: .tmp/os.elf 
 	objcopy -I elf32-i386 -O binary .tmp/os.elf .tmp/os.bin

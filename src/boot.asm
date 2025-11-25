@@ -97,6 +97,8 @@ code_start:
 
   extern kernel_entry
   call kernel_entry
+  jmp inf_loop
+
 
 global inf_loop
 inf_loop:

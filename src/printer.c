@@ -25,8 +25,10 @@ void vprintf(const char* fmt, va_list args) {
 	char buffer[1024];
 	char* buf_ptr = buffer;
 	size_t buf_len = sizeof(buffer);
+        char* buf_end = buffer + sizeof(buffer) - 1;
 
-	while(*fmt) {
+
+	while(*fmt && buf_ptr < buf_end) {
 		if (*fmt == '%') {
 			fmt++;
 			switch(*fmt) {
@@ -38,7 +40,7 @@ void vprintf(const char* fmt, va_list args) {
 				}
 				case 'x': {
 					int value = va_arg(args, int);
-					itoa(value, buf_ptr, 10);
+					itoa(value, buf_ptr, 16);
 					buf_ptr += strlen(buf_ptr);
 					break;
 				}
@@ -76,9 +78,9 @@ void vprintf(const char* fmt, va_list args) {
 		}
 		fmt++;
 	}
-	*buf_ptr++ = '\0';
+	*buf_ptr = '\0';
                             
-	for (const char* p = buffer; *p; ++p) {
+	for (const char* p = buffer; *p && p < buffer + sizeof(buffer); ++p) {
         	if (*p == '\n') {
             		screen_y_pos ++;
             		screen_x_pos = 0;
@@ -94,6 +96,7 @@ void vprintf(const char* fmt, va_list args) {
 			
             		}
         	}
+		scroll_if_needed();
     	}
 
 }

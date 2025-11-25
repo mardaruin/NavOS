@@ -1,6 +1,7 @@
 #include "alloc.h"
 #include "types.h"
 #include "panic.h"
+#include "printer.h"
 
 #ifndef INTERRUPTS
 #define INTERRUPTS
@@ -11,10 +12,7 @@
 #define IDT_SIZE (VECTORS_AMOUNT * DESCRIPTOR_SIZE)
 #define TRAMPLIN_SIZE 8
 
-
-typedef struct {
-
-} gate_type;
+            
 
 #pragma pack(push, 1)
 typedef struct {
@@ -22,19 +20,20 @@ typedef struct {
   uint16_t              segment_selector : 16; // Code segment of handler entry point
   uint8_t               reserved_32_36   :  5;
   uint8_t               clear_37_39      :  3;
-  uint8_t               gate_type        :  3;                                         
+  uint8_t               gate_type        :  4;                                         
   uint8_t               clear_44         :  1;
   uint8_t               DPL              :  2; // Descriptor privilege level
   uint8_t               P                :  1; // Present flag (0 - not present, 1 - present)
   uint16_t              offset_16_31     : 16; // Offset to handler entry point [16, 31] bits     `
 } idt_descriptor;
-
-#pragma pack(pop)
+                      
 
 typedef struct {
 	uint16_t limit : 16;
 	idt_descriptor* base;
 } IDT;
+#pragma pack(pop)
+
 
 
 typedef struct {

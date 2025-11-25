@@ -25,21 +25,23 @@ static size_t screen_y_pos = 0;
 
 
 void main() {
-    vga_clear_screen();
-    //printf("Successfully in main\n");
-    //DELAY_MS(10);
-       
+    vga_clear_screen();              
  
     init_idt();
     DELAY_MS(10);
-    printf("\nSuccessfully inited udt\n\n");
+    printf("\nSuccessfully inited idt\n\n");
+    scroll_if_needed();
+
     setup_registers();
-    DELAY_MS(10);
+
+printf("\na. setup_regs\n\n");
+    scroll_if_needed();
 
     div_zero();
-    DELAY_MS(10);
+printf("\na. zovzero\n\n");
+                   
     // pseudo_syscall();
     //sti();
     
     inf_loop();
-}                       
+ }                       
