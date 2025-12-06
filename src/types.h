@@ -1,5 +1,5 @@
 #ifndef TYPES_H
-#define TYPE_H
+#define TYPES_H
 
 typedef _Bool bool;
 
@@ -20,7 +20,7 @@ typedef unsigned long uintptr_t;
 
 typedef unsigned long size_t;
 
-#define NULL ((void *)0)
+#define NULL ((void*) 0)
 
 #define KERNEL_SIZE 0x10000
 #define ARENA_SIZE 0x80000
@@ -30,10 +30,10 @@ typedef unsigned long size_t;
 
 #define CODE_SEGMENT 0x08
 #define DATA_SEGMENT 0x10
-                                        
+
 extern void div_zero();
 extern void pseudo_syscall();
-extern void setup_registers();               
+extern void setup_registers();
 extern void inf_loop();
 
 #endif

@@ -4,7 +4,7 @@
 # Build tools
 NASM = nasm -f elf
 GCC = gcc
-GCC_FLAGS = -g -std=c99 -m32 -O0 -ffreestanding -no-pie -fno-pie -mno-sse -fno-stack-protector 
+GCC_FLAGS = -g3 -std=c99 -m32 -O0 -ffreestanding -no-pie -fno-pie -mno-sse -fno-stack-protector 
                                              
 
 
