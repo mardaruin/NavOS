@@ -10,7 +10,8 @@ GCC = gcc
 
 #Flags
 GCC_FLAGS = gcc -std=c99 -m32 -O2 -ffreestanding -no-pie -fno-pie -mno-sse -fno-stack-protector
-LD = 
+LD = ld
+
 
 
 # =============================================================================
@@ -19,7 +20,7 @@ LD =
 all: clean build test
 
 .tmp/boot.bin: src/boot.asm
-	$(NASM) src/boot.asm -o .tmp/boot.bin
+	$(NASM) src/boot.asm -o .tmp/boot.bin -dN=0x61a80
                                                                 
 boot.img: .tmp/boot.bin
 	dd if=/dev/zero of=boot.img bs=1024 count=1440

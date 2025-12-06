@@ -1,6 +1,9 @@
 [BITS 16]
 [ORG 0x7C00]
 
+%define SECTOR_SIZE 512
+%define NUMBER_OF_SECTORS ((N / SECTOR_SIZE) + ((N % SECTOR_SIZE) != 0))
+
 start:                                        
   cli   
   xor ax, ax   
@@ -96,7 +99,7 @@ read_end:
 
   
 
-NUMBER_OF_SECTORS equ 400
+;NUMBER_OF_SECTORS equ 400
 MAX_SECTORS equ 18
 MAX_HEADS equ 1
 MAX_CYLINDERS equ 79
