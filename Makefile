@@ -4,7 +4,7 @@
 # Build tools
 NASM = nasm -f elf
 GCC = gcc
-GCC_FLAGS = -std=c99 -m32 -O2 -ffreestanding -no-pie -fno-pie -mno-sse -fno-stack-protector 
+GCC_FLAGS = -std=c99 -m32 -O2 -ffreestanding -no-pie -fno-pie -mno-sse -fno-stack-protector -nodefaultlibs -lgcc -lc #-nostdinc
                                              
 
 
@@ -19,6 +19,8 @@ all: clean build test
 
 .tmp/vga.o: src/vga.c
 	$(GCC) $(GCC_FLAGS) -c src/vga.c -o .tmp/vga.o
+
+# -I/src 
 
 .tmp/memory.o: src/memory.c
 	$(GCC) $(GCC_FLAGS) -c src/memory.c -o .tmp/memory.o
@@ -50,9 +52,7 @@ all: clean build test
 
 boot.img: .tmp/boot.o .tmp/string.o .tmp/vga.o .tmp/memory.o .tmp/panic.o .tmp/alloc.o .tmp/printer.o .tmp/kernel_entry.o .tmp/main.o .tmp/os.bin .tmp/os.elf   
 	dd if=/dev/zero of=boot.img bs=1024 count=1440
-	dd if=.tmp/os.bin of=boot.img conv=notrunc
-	#dd if=random_big_file.txt of=boot.img conv=notrunc seek=512
-	#cat small_file.txt | dd of=boot.img bs=1 seek=1024 conv=notrunc
+	dd if=.tmp/os.bin of=boot.img conv=notrunc                      
 
 build: boot.img
 

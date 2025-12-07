@@ -132,6 +132,11 @@ code_start:
   hlt
   jmp $
 
+global cli
+cli:
+  cli
+  ret
+
 NUMBER_OF_SECTORS equ 400
 MAX_SECTORS equ 18
 MAX_HEADS equ 1

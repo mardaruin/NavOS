@@ -1,7 +1,10 @@
-#ifndef ALLOC_H
-#define ALLOC_H
+#include "types.h"
 
-extern void* malloc_undead(size_t size, size_t alignment);
-extern void* calloc_undead(size_t size, size_t alignment);
+#ifndef ALLOC_H
+  #define ALLOC_H
+
+
+void* malloc_undead(size_t size, size_t alignment);
+void* calloc_undead(size_t size, size_t alignment);
 
 #endif
