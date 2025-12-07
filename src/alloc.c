@@ -4,22 +4,16 @@
 #include "panic.h"
 #include "printer.h"
 
-
 #define ARENA_START 0x7C00
 #define ARENA_SIZE 0x77300
 
 static uint8_t* arena = (uint8_t*) ARENA_START;
 
 void* malloc_undead(size_t size, size_t alignment) {
-  size_t alligned_size = size;
-  if (size % alignment != 0) {
-    alligned_size = ((size / alignment) + 1) * alignment;
-  }
   uintptr cur_pos          = (uintptr) arena;
   uintptr next_aligned_pos = (cur_pos + alignment - 1) & ~(alignment - 1);
   size_t padding           = next_aligned_pos - cur_pos;
-  size_t total_space       = alligned_size + padding;
-  scroll_if_needed();
+  size_t total_space       = size + padding;
   if ((uintptr) arena + total_space > (uintptr) (ARENA_SIZE + ARENA_START)) {
     kernel_panic("Overflow error.");
   }
