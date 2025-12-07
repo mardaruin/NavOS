@@ -2,7 +2,6 @@
 
 #include "memory.h"
 #include "panic.h"
-#include "printer.h"
 
 #define ARENA_START 0x7C00
 #define ARENA_SIZE 0x77300
