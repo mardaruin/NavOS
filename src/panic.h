@@ -8,14 +8,8 @@
 //#include "vargs.h"
 #include <stdarg.h>
 
-extern void cli();
-extern void vkernel_panic(const char* fmt, va_list args);
-//extern void kernel_panic(const char* fmt, ...);
+extern void cli();                                           
 
-#ifdef DEBUG_MODE
 extern void kernel_panic(const char* fmt, ...);
-#else
-  #define kernel_panic(fmt, ...)
-#endif
-
+      
 #endif
