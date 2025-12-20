@@ -75,7 +75,7 @@ void init_idt() {
 }
 
 void universal_handler(interrupt_context *context) {
-  kernel_panic("unhandled interrupt #%x at %x:%x\n\n"
+  kernel_panic("unhandled interrupt #%x at %p:%p\n\n"
                "Registers: \n"
                "  EAX: %x, ECX: %x, EDX: %x, EBX: %x\n"
                "  ESP: %x, EBP: %x, ESI: %x, EDI: %x\n"

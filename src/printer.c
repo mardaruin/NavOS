@@ -40,7 +40,7 @@ void vprintf(const char* fmt, va_list args) {
 				}
 				case 'x': {
 					int value = va_arg(args, int);
-					itoa(value, buf_ptr, 16);
+					uitoa(value, buf_ptr, 16);
 					buf_ptr += strlen(buf_ptr);
 					break;
 				}
