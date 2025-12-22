@@ -20,7 +20,14 @@ typedef unsigned long uintptr_t;
 
 typedef unsigned long size_t;
 
-#define NULL ((void*) 0)
+#define NULL ((void *)0)
+
+#define DELAY_MS(ms)                                                           \
+  ({                                                                           \
+    volatile uint32_t delay = ms * 100000;                                     \
+    while (delay--) {                                                          \
+    }                                                                          \
+  })
 
 #define KERNEL_SIZE 0x10000
 #define ARENA_SIZE 0x80000
@@ -35,5 +42,6 @@ extern void div_zero();
 extern void pseudo_syscall();
 extern void setup_registers();
 extern void inf_loop();
+extern void sti();
 
 #endif

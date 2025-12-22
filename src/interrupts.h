@@ -14,6 +14,21 @@
 
 #pragma pack(push, 1)
 
+typedef enum {
+  INTERRUPT_GATE = 0b110,
+  TRAP_GATE = 0b111,
+
+} GATE_TYPE;
+
+typedef struct {
+  uint32_t eax, ecx, edx, ebx, esp, ebp, esi, edi, eip;
+  uint16_t gs, fs, es, ds;
+  uint16_t cs;
+  uint16_t int_vector;
+  uint32_t error_code;
+  uint32_t eflags;
+} interrupt_context;
+
 typedef struct {
   uint16_t offset_0_15 : 16;      // Offset to handler entry point [0, 15] bits
   uint16_t segment_selector : 16; // Code segment of handler entry point
@@ -33,15 +48,6 @@ typedef struct {
 
 #pragma pack(pop)
 
-typedef struct {
-  uint32_t eax, ecx, edx, ebx, esp, ebp, esi, edi, eip;
-  uint16_t gs, fs, es, ds;
-  uint16_t cs;
-  uint16_t int_vector;
-  uint32_t error_code;
-  uint32_t eflags;
-} interrupt_context;
-
 extern void collect_context();
 extern void collect_context_without_error_code();
 
@@ -50,5 +56,42 @@ extern void lidt(IDT *idt_address);
 void init_idt();
 
 void universal_handler(interrupt_context *context);
+
+typedef enum {
+  TIMER,
+  KEYBOARD,
+} PIC_DEVICES;
+
+#define N 136
+
+#define MASTER_COMMAND_PORT 0x20
+#define MASTER_DATA_PORT 0x21
+#define SLAVE_COMMAND_PORT 0xA0
+#define SLAVE_DATA_PORT 0xA1
+
+#define SLAVE_IRQ_IN_MASTER 2
+
+#define CONTROLLER_REGISTER 0x60
+
+#define ICW1_CASCADE_MODE 0x10001
+#define ICW2_MASTER 0x20
+#define ICW2_SLAVE 0X28
+#define ICW3_MASTER (1 << SLAVE_IRQ_IN_MASTER)
+#define ICW3_SLAVE SLAVE_IRQ_IN_MASTER
+#define ICW4_FULLY_NESTED_MODE 0x1
+
+#define EOI 0x20
+
+#define DEVICE_MASK_NONE 0xFF
+#define DEVICE_MASK_TIMER 0xFE
+#define DEVICE_MASK_KEYBOARD 0xFD
+#define DEVICE_MASK_BOTH (DEVICE_MASK_TIMER & DEVICE_MASK_KEYBOARD)
+
+extern void write_to_port(uint16_t port, uint8_t message);
+extern uint8_t read_from_port(uint16_t port);
+extern void setup8259(bool aeoi);
+void send_eoi();
+void set_device(uint8_t device);
+void inf_loop_with_inc();
 
 #endif

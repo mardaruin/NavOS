@@ -26,7 +26,7 @@ static bool has_error_code(uint8_t v) {
   }
 }
 
-void init_idt() {
+void init_idt(GATE_TYPE gate_type) {
   uint8_t *tramplins =
       (uint8_t *)malloc_undead(TRAMPLIN_SIZE * VECTORS_AMOUNT, 1);
 
@@ -59,7 +59,7 @@ void init_idt() {
     idt[v].offset_0_15 = (uint32_t)(tramplins + TRAMPLIN_SIZE * v) & 0xffff;
     idt[v].segment_selector = 0x08;
     idt[v].reserved_32_36 = 0;
-    idt[v].gate_type = 0b110; // 0b110 - interrupt gate, 0b111 - trap gate
+    idt[v].gate_type = gate_type; // 0b110 - interrupt gate, 0b111 - trap gate
     idt[v].clear_37_39 = 0;
     idt[v].clear_44 = 0;
     idt[v].DPL = 0b0;
@@ -74,19 +74,149 @@ void init_idt() {
   lidt(&idtr);
 }
 
+void setup8259(bool aeoi) {
+  // printf("In setup8259\n");
+  write_to_port(MASTER_DATA_PORT, 0xff);
+  write_to_port(SLAVE_DATA_PORT, 0xff);
+
+  // DELAY_MS(10);
+
+  // printf("ICW1:\n");
+  write_to_port(MASTER_COMMAND_PORT, ICW1_CASCADE_MODE);
+  write_to_port(SLAVE_COMMAND_PORT, ICW1_CASCADE_MODE);
+
+  // DELAY_MS(10);
+
+  // printf("ICW1 done\n");
+  // printf("ICW2:\n");
+  write_to_port(MASTER_DATA_PORT, ICW2_MASTER);
+  write_to_port(SLAVE_DATA_PORT, ICW2_SLAVE);
+
+  // DELAY_MS(10);
+
+  // printf("ICW2 done\n");
+  // printf("ICW3:\n");
+  write_to_port(MASTER_DATA_PORT, ICW3_MASTER);
+  write_to_port(SLAVE_DATA_PORT, ICW3_SLAVE);
+
+  // DELAY_MS(10);
+
+  // printf("ICW3 done\n");
+  // printf("ICW4:\n");
+  write_to_port(MASTER_DATA_PORT,
+                ((uint8_t)aeoi << 1 | ICW4_FULLY_NESTED_MODE));
+  write_to_port(SLAVE_DATA_PORT, ((uint8_t)aeoi << 1 | ICW4_FULLY_NESTED_MODE));
+  // printf("ICW4 done\n");
+
+  // DELAY_MS(10);
+
+  write_to_port(MASTER_DATA_PORT, ~(1 << SLAVE_IRQ_IN_MASTER));
+  write_to_port(SLAVE_DATA_PORT, 0xff);
+  // printf("End of setup\n");
+}
+
+void send_eoi() { write_to_port(MASTER_COMMAND_PORT, EOI); }
+
+int global_counter = 0;
+
+void keyboard_handler(struct interrupt_context *context) {
+  // for experiments
+  // kernel_panic("unhandled interrupt #%x at %p:%p\n\n"
+  //              "Registers: \n"
+  //              "  EAX: %x, ECX: %x, EDX: %x, EBX: %x\n"
+  //              "  ESP: %x, EBP: %x, ESI: %x, EDI: %x\n"
+  //              "  DS : %x, ES : %x, FS : %x, GS : %x\n\n"
+  //              "Error code: \n"
+  //              "  common_error_code, value: %x\n\n"
+  //              "EFLAGS\n"
+  //              "  value: %x\n",
+  //              context->int_vector, context->cs, context->eip, context->eax,
+  //              context->ecx, context->edx, context->ebx, context->esp,
+  //              context->ebp, context->esi, context->edi, context->ds,
+  //              context->es, context->fs, context->gs, context->error_code,
+  //              context->eflags);
+
+  // uint8_t byte = read_from_port(CONTROLLER_REGISTER);
+  // printf("%x ", byte);
+  //  sti();
+  //  eoi();
+  //  inf_loop();
+  return;
+}
+
+void timer_handler(struct interrupt_context *context) {
+  // for experiments
+  // kernel_panic("unhandled interrupt #%x at %p:%p\n\n"
+  //              "Registers: \n"
+  //              "  EAX: %x, ECX: %x, EDX: %x, EBX: %x\n"
+  //              "  ESP: %x, EBP: %x, ESI: %x, EDI: %x\n"
+  //              "  DS : %x, ES : %x, FS : %x, GS : %x\n\n"
+  //              "Error code: \n"
+  //              "  common_error_code, value: %x\n\n"
+  //              "EFLAGS\n"
+  //              "  value: %x\n",
+  //              context->int_vector, context->cs, context->eip, context->eax,
+  //              context->ecx, context->edx, context->ebx, context->esp,
+  //              context->ebp, context->esi, context->edi, context->ds,
+  //              context->es, context->fs, context->gs, context->error_code,
+  //              context->eflags);
+
+  // universal_handler(struct interrupt_context * context);
+
+  printf("%x ", global_counter++);
+
+  // DELAY_MS(10);
+  // sti();
+
+  // if (global_counter < N) {
+  //   send_eoi();
+  //   sti();
+  // }
+
+  // eoi();
+  // sti();
+  // inf_loop();
+
+  // global_counter = 0;
+
+  return;
+}
+
+void set_device(uint8_t device) { write_to_port(MASTER_COMMAND_PORT, device); }
+
+void inf_loop_with_inc() {
+  for (;;) {
+    printf("%d ", global_counter++);
+  }
+}
+
 void universal_handler(interrupt_context *context) {
-  kernel_panic("unhandled interrupt #%x at %p:%p\n\n"
-               "Registers: \n"
-               "  EAX: %x, ECX: %x, EDX: %x, EBX: %x\n"
-               "  ESP: %x, EBP: %x, ESI: %x, EDI: %x\n"
-               "  DS : %x, ES : %x, FS : %x, GS : %x\n\n"
-               "Error code: \n"
-               "  common_error_code, value: %x\n\n"
-               "EFLAGS\n"
-               "  value: %x\n",
-               context->int_vector, context->cs, context->eip, context->eax,
-               context->ecx, context->edx, context->ebx, context->esp,
-               context->ebp, context->esi, context->edi, context->ds,
-               context->es, context->fs, context->gs, context->error_code,
-               context->eflags);
+  switch (context->int_vector) {
+  case 0x00:
+    printf("Timer device\n");
+    timer_handler(context);
+    break;
+  case 0x01:
+    printf("Keyboard device\n");
+    keyboard_handler(context);
+    break;
+  default:
+    printf("Default handler\n");
+    // kernel_panic("unhandled interrupt #%x at %p:%p\n\n"
+    //              "Registers: \n"
+    //              "  EAX: %p, ECX: %p, EDX: %p, EBX: %p\n"
+    //              "  ESP: %p, EBP: %p, ESI: %p, EDI: %p\n"
+    //              "  DS : %p, ES : %p, FS : %p, GS : %p\n\n"
+    //              "Error code: \n"
+    //              "  common_error_code, value: %x\n\n"
+    //              "EFLAGS\n"
+    //              "  value: %x\n",
+    //              context->int_vector, context->cs, context->eip,
+    //              context->eax, context->ecx, context->edx, context->ebx,
+    //              context->esp, context->ebp, context->esi, context->edi,
+    //              context->ds, context->es, context->fs, context->gs,
+    //              context->error_code, context->eflags);
+    // printf("Default handler\n");
+    break;
+  }
 }
