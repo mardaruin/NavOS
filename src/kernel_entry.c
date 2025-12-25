@@ -1,3 +1,4 @@
+#include "kernel_entry.h"
 #include "alloc.h"
 #include "assert.h"
 #include "interrupts.h"
@@ -18,11 +19,28 @@ static size_t screen_y_pos = 0;
 void kernel_entry() {
   vga_clear_screen();
 
-  // for 5 lab
+  fifth_lab();
 
+  // fourth_lab();
+}
+
+void fourth_lab(void) {
+  init_idt(INTERRUPT_GATE);
+  setup_registers();
+
+  // div_zero();
+
+  // pseudo_syscall();
+  sti();
+
+  inf_loop();
+}
+
+void fifth_lab(void) {
   // INTERRUPT_GATE
   // TRAP_GATE
   init_idt(INTERRUPT_GATE);
+  setup_registers();
 
   setup8259(false); // true if aeoi
 
@@ -30,22 +48,11 @@ void kernel_entry() {
   // DEVICE_MASK_TIMER
   // DEVICE_MASK_KEYBOARD
   // DEVICE_MASK_BOTH
-  set_device(DEVICE_MASK_NONE);
+  set_device(DEVICE_MASK_TIMER);
 
   // vga_clear_screen();
   // DELAY_MS(10);
 
   sti();
   inf_loop();
-
-  // for 4 lab
-  // init_idt(INTERRUPT_GATE);
-  // setup_registers();
-
-  // div_zero();
-
-  // pseudo_syscall();
-  // sti();
-
-  // inf_loop();
 }

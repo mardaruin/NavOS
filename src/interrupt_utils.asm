@@ -30,11 +30,13 @@ lidt:
           
 global setup_registers
 setup_registers:
-  xor eax, eax 
+  xor eax, eax
+  mov ebx, 1
   mov ecx, 2
   mov edx, 3
   mov edi, 4
   mov esi, 5
+  mov ebp, 6
   ret
   
 global div_zero
@@ -54,15 +56,8 @@ collect_context_without_error_code:
   jmp collect_context
 
 
-;extern interrupt_context
-;section .bss
-;context resb sizeof.interrupt_context 
-
 global collect_context
 collect_context:
-  ;push eax
-  ;pop eax
-  ;mov dword [context + 56], eax
 
   push ds
   push es
@@ -74,7 +69,6 @@ collect_context:
 
   mov ax, data_segment
   mov ds, ax
-  mov ss, ax
   mov es, ax
   mov fs, ax
   mov gs, ax
@@ -84,8 +78,6 @@ collect_context:
   and esp, 0xFFFFFFF0
   sub esp, 12
   push ebx
-  ;extern kernel_entry
-  ;call kernel_entry
 
   extern universal_handler
   call universal_handler 

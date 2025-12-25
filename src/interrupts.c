@@ -63,8 +63,7 @@ void init_idt(GATE_TYPE gate_type) {
     idt[v].clear_44 = 0;
     idt[v].DPL = 0b0;
     idt[v].P = 0b1; // 1 - present flag
-    idt[v].offset_16_31 =
-        ((uint32_t)(tramplins + TRAMPLIN_SIZE * v) >> 16) & 0xffff;
+    idt[v].offset_16_31 = (uint32_t)(tramplins + TRAMPLIN_SIZE * v) >> 16;
   }
 
   IDT idtr;
@@ -118,51 +117,53 @@ void send_eoi() { write_to_port(MASTER_COMMAND_PORT, EOI); }
 
 int global_counter = 0;
 
-void keyboard_handler(struct interrupt_context *context) {
+void keyboard_handler(interrupt_context *context) {
   // for experiments
-  // kernel_panic("unhandled interrupt #%x at %p:%p\n\n"
-  //              "Registers: \n"
-  //              "  EAX: %x, ECX: %x, EDX: %x, EBX: %x\n"
-  //              "  ESP: %x, EBP: %x, ESI: %x, EDI: %x\n"
-  //              "  DS : %x, ES : %x, FS : %x, GS : %x\n\n"
-  //              "Error code: \n"
-  //              "  common_error_code, value: %x\n\n"
-  //              "EFLAGS\n"
-  //              "  value: %x\n",
-  //              context->int_vector, context->cs, context->eip, context->eax,
-  //              context->ecx, context->edx, context->ebx, context->esp,
-  //              context->ebp, context->esi, context->edi, context->ds,
-  //              context->es, context->fs, context->gs, context->error_code,
-  //              context->eflags);
+  kernel_panic("unhandled interrupt #%x at %p:%p\n\n"
+               "Registers: \n"
+               "  EAX: %p, ECX: %p, EDX: %p, EBX: %p\n"
+               "  ESP: %p, EBP: %p, ESI: %p, EDI: %p\n"
+               "  DS : %p, ES : %p, FS : %p, GS : %p\n\n"
+               "Error code: \n"
+               "  %s, value: %p\n\n"
+               "EFLAGS\n"
+               "  value: %p\n",
+               context->int_vector, context->cs, context->eip, context->eax,
+               context->ecx, context->edx, context->ebx, context->esp,
+               context->ebp, context->esi, context->edi, context->ds,
+               context->es, context->fs, context->gs,
+               error_type_message(context->int_vector), context->error_code,
+               context->eflags);
 
   // uint8_t byte = read_from_port(CONTROLLER_REGISTER);
-  // printf("%x ", byte);
+  // printf("%p ", byte);
   //  sti();
   //  eoi();
   //  inf_loop();
   return;
 }
 
-void timer_handler(struct interrupt_context *context) {
+void timer_handler(interrupt_context *context) {
   // for experiments
-  // kernel_panic("unhandled interrupt #%x at %p:%p\n\n"
-  //              "Registers: \n"
-  //              "  EAX: %x, ECX: %x, EDX: %x, EBX: %x\n"
-  //              "  ESP: %x, EBP: %x, ESI: %x, EDI: %x\n"
-  //              "  DS : %x, ES : %x, FS : %x, GS : %x\n\n"
-  //              "Error code: \n"
-  //              "  common_error_code, value: %x\n\n"
-  //              "EFLAGS\n"
-  //              "  value: %x\n",
-  //              context->int_vector, context->cs, context->eip, context->eax,
-  //              context->ecx, context->edx, context->ebx, context->esp,
-  //              context->ebp, context->esi, context->edi, context->ds,
-  //              context->es, context->fs, context->gs, context->error_code,
-  //              context->eflags);
+  kernel_panic("unhandled interrupt #%x at %p:%p\n\n"
+               "Registers: \n"
+               "  EAX: %p, ECX: %p, EDX: %p, EBX: %p\n"
+               "  ESP: %p, EBP: %p, ESI: %p, EDI: %p\n"
+               "  DS : %p, ES : %p, FS : %p, GS : %p\n\n"
+               "Error code: \n"
+               "  %s, value: %p\n\n"
+               "EFLAGS\n"
+               "  value: %p\n",
+               context->int_vector, context->cs, context->eip, context->eax,
+               context->ecx, context->edx, context->ebx, context->esp,
+               context->ebp, context->esi, context->edi, context->ds,
+               context->es, context->fs, context->gs,
+               error_type_message(context->int_vector), context->error_code,
+               context->eflags);
 
   // universal_handler(struct interrupt_context * context);
 
-  printf("%x ", global_counter++);
+  // printf("%p ", global_counter++);
 
   // DELAY_MS(10);
   // sti();
@@ -189,33 +190,42 @@ void inf_loop_with_inc() {
   }
 }
 
+static const char *error_type_message(uint8_t v) {
+  if (has_error_code(v)) {
+    return "common_error_code";
+  }
+  return "fake_error_code";
+}
+
 void universal_handler(interrupt_context *context) {
   switch (context->int_vector) {
-  case 0x00:
+  case 0x20:
     printf("Timer device\n");
     timer_handler(context);
     break;
-  case 0x01:
+  case 0x21:
     printf("Keyboard device\n");
     keyboard_handler(context);
     break;
   default:
     printf("Default handler\n");
-    // kernel_panic("unhandled interrupt #%x at %p:%p\n\n"
-    //              "Registers: \n"
-    //              "  EAX: %p, ECX: %p, EDX: %p, EBX: %p\n"
-    //              "  ESP: %p, EBP: %p, ESI: %p, EDI: %p\n"
-    //              "  DS : %p, ES : %p, FS : %p, GS : %p\n\n"
-    //              "Error code: \n"
-    //              "  common_error_code, value: %x\n\n"
-    //              "EFLAGS\n"
-    //              "  value: %x\n",
-    //              context->int_vector, context->cs, context->eip,
-    //              context->eax, context->ecx, context->edx, context->ebx,
-    //              context->esp, context->ebp, context->esi, context->edi,
-    //              context->ds, context->es, context->fs, context->gs,
-    //              context->error_code, context->eflags);
-    // printf("Default handler\n");
+    kernel_panic("Struct address: %p\n"
+                 "Unhandled interrupt #%x at %p:%p\n\n"
+                 "Registers: \n"
+                 "  EAX: %p, ECX: %p, EDX: %p, EBX: %p\n"
+                 "  ESP: %p, EBP: %p, ESI: %p, EDI: %p\n"
+                 "  DS : %p, ES : %p, FS : %p, GS : %p\n\n"
+                 "Error code: \n"
+                 "  %s, value: %p\n\n"
+                 "EFLAGS\n"
+                 "  value: %p\n",
+                 context, context->int_vector, context->cs, context->eip,
+                 context->eax, context->ecx, context->edx, context->ebx,
+                 context->esp, context->ebp, context->esi, context->edi,
+                 context->ds, context->es, context->fs, context->gs,
+                 error_type_message(context->int_vector), context->error_code,
+                 context->eflags);
+    printf("Default handler\n");
     break;
   }
 }

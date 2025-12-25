@@ -21,12 +21,33 @@ typedef enum {
 } GATE_TYPE;
 
 typedef struct {
-  uint32_t eax, ecx, edx, ebx, esp, ebp, esi, edi, eip;
-  uint16_t gs, fs, es, ds;
-  uint16_t cs;
+  uint32_t edi;
+  uint32_t esi;
+
+  uint32_t ebp;
+  uint32_t esp;
+  uint32_t ebx;
+  uint32_t edx;
+  uint32_t ecx;
+  uint32_t eax;
+
+  uint16_t ds;
+  uint16_t padding_1;
+  uint16_t es;
+  uint16_t padding_2;
+  uint16_t fs;
+  uint16_t padding_3;
+  uint16_t gs;
+  uint16_t padding_4;
+
   uint16_t int_vector;
+  uint16_t padding_5;
   uint32_t error_code;
+
+  uint32_t eip;
+  uint16_t cs;
   uint32_t eflags;
+  // uint16_t ss;
 } interrupt_context;
 
 typedef struct {
@@ -54,6 +75,7 @@ extern void collect_context_without_error_code();
 extern void lidt(IDT *idt_address);
 
 void init_idt();
+static const char *error_type_message(uint8_t v);
 
 void universal_handler(interrupt_context *context);
 
