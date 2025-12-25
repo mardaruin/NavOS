@@ -55,7 +55,6 @@ void init_idt(GATE_TYPE gate_type) {
 
   idt_descriptor *idt = malloc_undead(IDT_SIZE, IDT_ALIGNMENT);
   for (uint16_t v = 0; v < VECTORS_AMOUNT; v++) {
-    scroll_if_needed();
     idt[v].offset_0_15 = (uint32_t)(tramplins + TRAMPLIN_SIZE * v) & 0xffff;
     idt[v].segment_selector = 0x08;
     idt[v].reserved_32_36 = 0;
