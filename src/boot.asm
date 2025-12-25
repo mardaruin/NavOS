@@ -52,9 +52,6 @@ disk_read_failed:
   call print_string
   jmp inf_loop
 
-;halt_and_wait:
-;  hlt
-;  jmp halt_and_wait
 
 print_string:
   pusha
