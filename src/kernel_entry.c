@@ -21,7 +21,7 @@ void kernel_entry() {
 
   fifth_lab();
 
-  // fourth_lab();
+  //fourth_lab();
 }
 
 void fourth_lab(void) {
@@ -48,7 +48,19 @@ void fifth_lab(void) {
   // DEVICE_MASK_TIMER
   // DEVICE_MASK_KEYBOARD
   // DEVICE_MASK_BOTH
-  set_device(DEVICE_MASK_TIMER);
+
+  /* Here I try to copy conwors precision zerofication */
+  bool enable = true;
+  uint8_t timer_code = 0;
+  uint8_t value = read_from_port(MASTER_DATA_PORT);
+  //uint8_t timer_enable_mask = ((value) & ~(0x1 << (bit_number)))
+  uint8_t timer_enable_mask = ((value) & ~(0x1 << (timer_code)));
+  // write_to_port(MASTER_DATA_PORT, timer_enable_mask);
+
+  /* but in the end just write in into data in your style*/
+  write_to_port(MASTER_DATA_PORT, DEVICE_MASK_TIMER);
+
+  //set_device(DEVICE_MASK_TIMER);
 
   // vga_clear_screen();
   // DELAY_MS(10);

@@ -72,6 +72,16 @@ void init_idt(GATE_TYPE gate_type) {
   lidt(&idtr);
 }
 
+/*
+ * Conworification of words.
+ * EXP2 == what needed in experiment 2.
+ * FULL = stolen from conwor's master
+ */
+#define ICW1_CONV_CASCADE_EXP2 ((1 << 0) | (0 << 1))
+#define ICW1_CONV_CASCADE_FULL ((1 << 0) | (0 << 1) | (0 << 2) | (0 << 3) | (1 << 4))
+#define ICW4_CONV_EXP2 (1 << 0)
+#define ICW4_CONV_FULL ((1 << 0) | (0 << 1) | (0 << 2) | (0 << 3) | (0 << 4))
+
 void setup8259(bool aeoi) {
   // printf("In setup8259\n");
   write_to_port(MASTER_DATA_PORT, 0xff);
@@ -80,8 +90,8 @@ void setup8259(bool aeoi) {
   // DELAY_MS(10);
 
   // printf("ICW1:\n");
-  write_to_port(MASTER_COMMAND_PORT, ICW1_CASCADE_MODE);
-  write_to_port(SLAVE_COMMAND_PORT, ICW1_CASCADE_MODE);
+  write_to_port(MASTER_COMMAND_PORT, ICW1_CONV_CASCADE_EXP2);
+  write_to_port(SLAVE_COMMAND_PORT, ICW1_CONV_CASCADE_EXP2);
 
   // DELAY_MS(10);
 
@@ -101,9 +111,11 @@ void setup8259(bool aeoi) {
 
   // printf("ICW3 done\n");
   // printf("ICW4:\n");
-  write_to_port(MASTER_DATA_PORT,
-                ((uint8_t)aeoi << 1 | ICW4_FULLY_NESTED_MODE));
-  write_to_port(SLAVE_DATA_PORT, ((uint8_t)aeoi << 1 | ICW4_FULLY_NESTED_MODE));
+  // write_to_port(MASTER_DATA_PORT,
+  //               ((uint8_t)aeoi << 1 | ICW4_FULLY_NESTED_MODE));
+  // write_to_port(SLAVE_DATA_PORT, ((uint8_t)aeoi << 1 | ICW4_FULLY_NESTED_MODE));
+  write_to_port(SLAVE_DATA_PORT, ICW4_CONV_EXP2);
+  write_to_port(SLAVE_DATA_PORT, ICW4_CONV_EXP2);
   // printf("ICW4 done\n");
 
   // DELAY_MS(10);

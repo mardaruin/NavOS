@@ -15,8 +15,8 @@
 #pragma pack(push, 1)
 
 typedef enum {
-  INTERRUPT_GATE = 0b110,
-  TRAP_GATE = 0b111,
+  INTERRUPT_GATE = 0xE,
+  TRAP_GATE = 0xF,
 
 } GATE_TYPE;
 
@@ -46,6 +46,7 @@ typedef struct {
 
   uint32_t eip;
   uint16_t cs;
+  uint16_t padding_6;
   uint32_t eflags;
   // uint16_t ss;
 } interrupt_context;
@@ -95,7 +96,7 @@ typedef enum {
 
 #define CONTROLLER_REGISTER 0x60
 
-#define ICW1_CASCADE_MODE 0x10001
+#define ICW1_CASCADE_MODE (0 << 1)
 #define ICW2_MASTER 0x20
 #define ICW2_SLAVE 0X28
 #define ICW3_MASTER (1 << SLAVE_IRQ_IN_MASTER)
