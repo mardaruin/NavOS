@@ -31,13 +31,13 @@ typedef struct {
   uint32_t ecx;
   uint32_t eax;
 
-  uint16_t ds;
-  uint16_t padding_1;
-  uint16_t es;
-  uint16_t padding_2;
-  uint16_t fs;
-  uint16_t padding_3;
   uint16_t gs;
+  uint16_t padding_1;
+  uint16_t fs;
+  uint16_t padding_2;
+  uint16_t es;
+  uint16_t padding_3;
+  uint16_t ds;
   uint16_t padding_4;
 
   uint16_t int_vector;
@@ -85,7 +85,7 @@ typedef enum {
   KEYBOARD,
 } PIC_DEVICES;
 
-#define N 136
+#define N (136)
 
 #define MASTER_COMMAND_PORT 0x20
 #define MASTER_DATA_PORT 0x21

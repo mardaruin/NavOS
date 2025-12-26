@@ -9,10 +9,8 @@
 #define WHITE_BACKGROUND 0x0700
 
 void vga_clear_screen() {
-  volatile uint16_t *video_memory = VIDEO_MEMORY;
-  for (int i = 0; i < SCREEN_WIDE * SCREEN_HEIGHT; ++i) {
-    video_memory[i] = SPACE;
-  }
+  uint16_t *video_memory = VIDEO_MEMORY;
+  memset(video_memory, WHITE_BACKGROUND, SCREEN_HEIGHT * SCREEN_WIDE);
 }
 
 void vga_print_char(char c, size_t x, size_t y) {
@@ -21,11 +19,8 @@ void vga_print_char(char c, size_t x, size_t y) {
 }
 
 void vga_scroll_down() {
-  volatile uint16_t *video_memory = VIDEO_MEMORY;
+  uint16_t *video_memory = VIDEO_MEMORY;
   memmove(video_memory, video_memory + SCREEN_WIDE,
           sizeof(uint16_t) * (SCREEN_WIDE * (SCREEN_HEIGHT - 1)));
-  for (int i = SCREEN_WIDE * (SCREEN_HEIGHT - 1);
-       i < SCREEN_WIDE * SCREEN_HEIGHT; ++i) {
-    video_memory[i] = SPACE;
-  }
+  memset(video_memory, SPACE, SCREEN_WIDE);
 }

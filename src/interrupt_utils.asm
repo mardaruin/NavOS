@@ -74,7 +74,7 @@ collect_context:
   mov gs, ax
 
   mov ebx, esp
-  sub esp, 16
+  ;sub esp, 16
   and esp, 0xFFFFFFF0
   sub esp, 12
   push ebx

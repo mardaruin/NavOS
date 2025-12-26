@@ -16,11 +16,16 @@ void *memmove(void *dst, const void *src, size_t n) {
   return dst;
 }
 
-void *memzero(void *dst, size_t n) {
+void *memset(void *dst, int value, size_t n) {
   char *d = (char *)dst;
   for (size_t i = 0; i < n; ++i) {
-    d[i] = 0;
+    d[i] = value;
   }
+  return dst;
+}
+
+void *memzero(void *dst, size_t n) {
+  memset(dst, 0, n);
   return dst;
 }
 
