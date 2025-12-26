@@ -118,13 +118,8 @@ void setup8259(bool aeoi) {
 void send_eoi() { write_to_port(MASTER_COMMAND_PORT, EOI); }
 
 void change_device_status(PIC_DEVICES device, bool enable) {
-  short port;
-  if (device < MASTER_IRQ_LAST) {
-    port = MASTER_DATA_PORT;
-  } else {
-    port = SLAVE_DATA_PORT;
-    device -= SLAVE_IRQ_FIRST;
-  }
+  short port = MASTER_DATA_PORT;
+
   uint8_t val = read_from_port(port);
   if (enable) {
     val = __clear_bit(val, device);
