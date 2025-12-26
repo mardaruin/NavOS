@@ -2,7 +2,10 @@
 # Variables
 
 # Build tools
-NASM = nasm -f bin 
+NASM = nasm -f elf
+GCC = gcc
+GCC_FLAGS = -g3 -std=c99 -m32 -O0 -ffreestanding -no-pie -fno-pie -mno-sse -fno-stack-protector 
+                                             
 
 
 # =============================================================================
@@ -10,12 +13,25 @@ NASM = nasm -f bin
 
 all: clean build test
 
-.tmp/boot.bin: src/boot.asm
-	$(NASM) src/boot.asm -o .tmp/boot.bin
+.tmp/boot.o: src/boot.asm
+	$(NASM) src/boot.asm -o .tmp/boot.o -dN=0xA000
+                                                        
+.tmp/interrupt_utils.o: src/interrupt_utils.asm
+	$(NASM) src/interrupt_utils.asm -o .tmp/interrupt_utils.o
 
-boot.img: .tmp/boot.bin
+
+.tmp/%.o: src/%.c
+	$(GCC) $(GCC_FLAGS) -c $< -o $@
+
+.tmp/os.elf: .tmp/boot.o .tmp/kernel_entry.o link.ld
+	ld -m elf_i386 .tmp/boot.o .tmp/interrupts.o .tmp/interrupt_utils.o .tmp/string.o .tmp/vga.o .tmp/memory.o .tmp/panic.o .tmp/alloc.o .tmp/printer.o .tmp/kernel_entry.o   -T link.ld -o .tmp/os.elf
+.tmp/os.bin: .tmp/os.elf 
+	objcopy -I elf32-i386 -O binary .tmp/os.elf .tmp/os.bin
+	
+
+boot.img: .tmp/boot.o .tmp/interrupts.o .tmp/interrupt_utils.o .tmp/string.o .tmp/vga.o .tmp/memory.o .tmp/panic.o .tmp/alloc.o .tmp/printer.o .tmp/kernel_entry.o .tmp/os.bin .tmp/os.elf   
 	dd if=/dev/zero of=boot.img bs=1024 count=1440
-	dd if=.tmp/boot.bin of=boot.img conv=notrunc
+	dd if=.tmp/os.bin of=boot.img conv=notrunc                      
 
 build: boot.img
 
