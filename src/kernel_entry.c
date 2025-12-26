@@ -42,7 +42,7 @@ void fifth_lab(void) {
   init_idt(INTERRUPT_GATE);
   setup_registers();
 
-  setup8259(false); // true if aeoi
+  setup8259(true); // true if aeoi
 
   // DEVICE_MASK_NONE
   // DEVICE_MASK_TIMER
