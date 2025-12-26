@@ -1,4 +1,5 @@
 #include "interrupts.h"
+#include "types.h"
 #include "vga.h"
 
 #define DELAY_MS(ms)                                                           \
@@ -116,18 +117,50 @@ void setup8259(bool aeoi) {
 
 void send_eoi() { write_to_port(MASTER_COMMAND_PORT, EOI); }
 
+void change_device_status(PIC_DEVICES device, bool enable) {
+  short port;
+  if (device < MASTER_IRQ_LAST) {
+    port = MASTER_DATA_PORT;
+  } else {
+    port = SLAVE_DATA_PORT;
+    device -= SLAVE_IRQ_FIRST;
+  }
+  uint8_t val = read_from_port(port);
+  if (enable) {
+    val = __clear_bit(val, device);
+  } else {
+    val = __set_bit(val, device);
+  }
+}
+
+void disable_device(int device) { change_device_status(device, false); }
+
 int global_counter = 0;
 
 void keyboard_handler(interrupt_context *context) {
   // for experiments
   // print_panic(context);
 
-  // uint8_t byte = read_from_port(CONTROLLER_REGISTER);
-  // printf("%p ", byte);
-  //  sti();
-  //  eoi();
-  //  inf_loop();
+  uint8_t byte = read_from_port(CONTROLLER_REGISTER);
+  printf("%d ", byte);
+  // sti();
+  while (true) {
+    // printf("%d ", global_counter++);
+  }
+  // sti();
+  send_eoi();
+  inf_loop();
   return;
+}
+
+static void delay() {
+  for (int i = 0; i < 10; i++) {
+    for (int j = 0; j < 50000; j++) {
+      write_to_port(0x80, 0x80);
+    }
+    printf("%d ", i);
+  }
+  printf("\n");
 }
 
 void timer_handler(interrupt_context *context) {
@@ -136,17 +169,24 @@ void timer_handler(interrupt_context *context) {
 
   // universal_handler(struct interrupt_context * context);
 
-  printf("%d ", global_counter++);
+  // printf("%d ", global_counter++);
+  //  global_counter = 0;
+  disable_device(DEVICE_MASK_TIMER);
 
-  // DELAY_MS(10);
-  // sti();
+  delay();
+  sti();
+  delay();
 
   // if (global_counter < N) {
-  //   send_eoi();
+  //   // send_eoi();
   //   sti();
   // }
 
-  // send_eoi();
+  // while (true) {
+  //   // printf("%d ", global_counter++);
+  // }
+
+  send_eoi();
   sti();
   inf_loop();
 
@@ -196,7 +236,7 @@ void universal_handler(interrupt_context *context) {
     timer_handler(context);
     break;
   case 0x21:
-    printf("Keyboard device\n");
+    // printf("Keyboard device\n");
     keyboard_handler(context);
     break;
   default:

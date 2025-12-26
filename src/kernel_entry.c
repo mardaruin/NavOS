@@ -49,7 +49,7 @@ void fifth_lab(void) {
   // DEVICE_MASK_KEYBOARD
   // DEVICE_MASK_BOTH
 
-  set_device(DEVICE_MASK_TIMER);
+  set_device(DEVICE_MASK_BOTH);
 
   // vga_clear_screen();
   // DELAY_MS(10);

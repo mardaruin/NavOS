@@ -14,6 +14,9 @@
 
 #pragma pack(push, 1)
 
+#define __set_bit(value, bit_number) ((value) | (0x1 << (bit_number)))
+#define __clear_bit(value, bit_number) ((value) & ~(0x1 << (bit_number)))
+
 typedef enum {
   INTERRUPT_GATE = 0xE,
   TRAP_GATE = 0xF,
@@ -85,12 +88,16 @@ typedef enum {
   KEYBOARD,
 } PIC_DEVICES;
 
-#define N (136)
+#define N 150
 
 #define MASTER_COMMAND_PORT 0x20
 #define MASTER_DATA_PORT 0x21
+#define MASTER_IRQ_FIRST 0
+#define MASTER_IRQ_LAST 7
 #define SLAVE_COMMAND_PORT 0xA0
 #define SLAVE_DATA_PORT 0xA1
+#define SLAVE_IRQ_FIRST 8
+#define SLAVE_IRQ_LAST 15
 
 #define SLAVE_IRQ_IN_MASTER 2
 

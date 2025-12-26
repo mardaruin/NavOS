@@ -1,4 +1,5 @@
 #include "string.h"
+#include "memory.h"
 
 size_t strlen(const char *str) {
   size_t len = 0;
@@ -21,7 +22,7 @@ char *itoa(int value, char *str, int base) {
   if (sign)
     *wstr++ = '-';
   *wstr = '\0';
-  reverse(str, wstr - str - 1);
+  reverse(str, wstr - str);
   return str;
 }
 
