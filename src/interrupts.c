@@ -139,11 +139,11 @@ void keyboard_handler(interrupt_context *context) {
   uint8_t byte = read_from_port(CONTROLLER_REGISTER);
   printf("%d ", byte);
   // sti();
-  while (true) {
-    // printf("%d ", global_counter++);
-  }
-  // sti();
-  send_eoi();
+  // while (true) {
+  //   // printf("%d ", global_counter++);
+  // }
+  sti();
+  // send_eoi();
   inf_loop();
   return;
 }
@@ -164,26 +164,24 @@ void timer_handler(interrupt_context *context) {
 
   // universal_handler(struct interrupt_context * context);
 
-  // printf("%d ", global_counter++);
-  //  global_counter = 0;
-  disable_device(DEVICE_MASK_TIMER);
+  printf("%d ", global_counter++);
+  //   global_counter = 0;
+  //  disable_device(DEVICE_MASK_TIMER);
 
-  delay();
-  sti();
-  delay();
+  // delay();
+  // sti();
+  // delay();
 
   // if (global_counter < N) {
-  //   // send_eoi();
-  //   sti();
+  //   send_eoi();
+  //   // sti();
   // }
 
   // while (true) {
   //   // printf("%d ", global_counter++);
   // }
 
-  send_eoi();
-  sti();
-  inf_loop();
+  // send_eoi();
 
   // global_counter = 0;
 
@@ -224,11 +222,27 @@ void print_panic(interrupt_context *context) {
                context->eflags);
 }
 
+void start_process(void *user_program, void *stack) {
+  user_context us_context;
+  us_context.context.cs = 0x1b;
+  us_context.context.ds = 0x23;
+  us_context.context.es = 0x23;
+  us_context.context.fs = 0x23;
+  us_context.context.gs = 0x23;
+  us_context.context.eip = (uint32_t)user_program;
+  us_context.esp = (uint32_t)stack;
+  us_context.context.eflags = (eflags() & ~(0x11 << 12) | (1 << 9));
+  us_context.ss = 0x23;
+  restore_context(&us_context);
+}
+
 void universal_handler(interrupt_context *context) {
   switch (context->int_vector) {
   case 0x20:
     // printf("Timer device\n");
     timer_handler(context);
+    sti();
+    inf_loop();
     break;
   case 0x21:
     // printf("Keyboard device\n");

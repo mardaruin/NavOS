@@ -85,6 +85,9 @@ read_end:
 
 [BITS 32]
 code_start:
+  mov ax, tss_desc 
+  ltr ax
+
   mov ax, data_segment
   mov ds, ax
   mov ss, ax
@@ -101,7 +104,7 @@ inf_loop:
   jmp inf_loop
 
 
-align 8       ; выравнивание
+align 8
 tss:
   .previous_task_link: dd 0
   .esp0:               dd 0x7c00
@@ -139,7 +142,7 @@ tss:
   .ldt_selector:       dw 0
   .reserved9:          dw 0
   .debug_trap:         dw 0
-  .io_map_base:        dw 108
+  .io_map_base:        dw 108 + 32 
   .ssp:                dd 0
 
 
@@ -159,12 +162,33 @@ gdt:
   db 0b11001111           ; granularity byte - g=1, db=1, l=0, avl=0, high bits of the limit=1111 
   db 0                    ; high base address
 ; сегмент данных
-  dw 0xffff
-  dw 0
-  db 0
-  db 0b10010010
-  db 0b11001111
-  db 0x0
+  dw 0xffff               ; low limit - максимальный размер сегмента
+  dw 0                    ; low base address
+  db 0                    ; middle base address
+  db 0b10010010           ; access bytes - p=1, dpl=00, s=1, type=0010 
+  db 0b11001111           ; granularity byte - g=1, db=1, l=0, avl=0, high bits of the limit=1111 
+  db 0x0                  ; high base address
+; code segment with dpl = 3
+  dw 0xffff               ; low limit - максимальный размер сегмента
+  dw 0                    ; low base address
+  db 0                    ; middle base address
+  db 0b11111010           ; access bytes - p=1, dpl=11, s=1, type=1010 
+  db 0b11001111           ; granularity byte - g=1, db=1, l=0, avl=0, high bits of the limit=1111 
+  db 0                    ; high base address
+; data segment with dpl = 3
+  dw 0xffff               ; low limit - максимальный размер сегмента
+  dw 0                    ; low base address
+  db 0                    ; middle base address
+  db 0b11110010           ; access bytes - p=1, dpl=11, s=1, type=0010 
+  db 0b11001111           ; granularity byte - g=1, db=1, l=0, avl=0, high bits of the limit=1111 
+  db 0x0                  ; high base address
+tss_desc:           
+  dw 0x6b                 ; low limit - 1
+  dw 0                    ; low base addr
+  db 0                    ; middle base address 
+  db 0b10001001           ; access bytes - p=1, dpl=00, s=0, type=1001 
+  db 0                    ; granularity byte - g=0, db=0, l=0, avl=0, high bits of the limit=0000
+  db 0                    ; high base address
 gdt_end:
 
 null_segment equ 0

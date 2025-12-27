@@ -12,6 +12,12 @@ write_to_port:
     ret
 
 
+global eflags
+eflags:
+  pushfd
+  pop eax
+  ret
+
 global cli
 cli:
   cli 
@@ -74,7 +80,6 @@ collect_context:
   mov gs, ax
 
   mov ebx, esp
-  ;sub esp, 16
   and esp, 0xFFFFFFF0
   sub esp, 12
   push ebx
@@ -87,13 +92,23 @@ collect_context:
   pop gs
   pop fs
   pop es
-  pop ss
   pop ds
   add esp, 8
   iret
 
   hlt 
   jmp $
+
+global restore_context
+restore_context:
+  mov esp, dword [esp + 4]
+  popa
+  pop gs
+  pop fs
+  pop es
+  pop ds
+  add esp, 8
+  iret
 
 null_segment equ 0
 code_segment equ 0x08

@@ -13,13 +13,21 @@
 #define SCREEN_HEIGHT 25
 #define BLOCK_SIZE 123
 #define ALIGNMENT_VALUE 16
+#define STACK_SIZE 4096
 
 static size_t screen_y_pos = 0;
+
+void fourth_lab(void);
+void fifth_lab(void);
+void six_lab(void);
+void user_program(void);
 
 void kernel_entry() {
   vga_clear_screen();
 
-  fifth_lab();
+  six_lab();
+
+  // fifth_lab();
 
   // fourth_lab();
 }
@@ -56,4 +64,19 @@ void fifth_lab(void) {
 
   sti();
   inf_loop();
+}
+
+void six_lab(void) {
+  init_idt(INTERRUPT_GATE);
+  setup8259(true);
+  // set_device(DEVICE_MASK_TIMER);
+  uint8_t *stack = malloc_undead(STACK_SIZE, ALIGNMENT_VALUE) + STACK_SIZE;
+  start_process(user_program, stack);
+  // inf_loop();
+}
+
+void user_program(void) {
+  printf("User process\n");
+
+  // inf_loop();
 }

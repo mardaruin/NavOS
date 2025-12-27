@@ -55,6 +55,13 @@ typedef struct {
 } interrupt_context;
 
 typedef struct {
+  interrupt_context context;
+  uint32_t esp;
+  uint16_t ss;
+  uint16_t padding;
+} user_context;
+
+typedef struct {
   uint16_t offset_0_15 : 16;      // Offset to handler entry point [0, 15] bits
   uint16_t segment_selector : 16; // Code segment of handler entry point
   uint8_t reserved_32_36 : 5;
@@ -120,8 +127,11 @@ typedef enum {
 extern void write_to_port(uint16_t port, uint8_t message);
 extern uint8_t read_from_port(uint16_t port);
 extern void setup8259(bool aeoi);
+extern uint32_t eflags();
+extern void restore_context(void *context);
 void send_eoi();
 void set_device(uint8_t device);
 void inf_loop_with_inc();
+void start_process(void *user_program, void *stack);
 
 #endif
