@@ -164,9 +164,9 @@ void timer_handler(interrupt_context *context) {
 
   // universal_handler(struct interrupt_context * context);
 
-  printf("%d ", global_counter++);
-  //   global_counter = 0;
-  //  disable_device(DEVICE_MASK_TIMER);
+  // printf("%d ", global_counter++);
+  //    global_counter = 0;
+  //   disable_device(DEVICE_MASK_TIMER);
 
   // delay();
   // sti();
@@ -184,6 +184,14 @@ void timer_handler(interrupt_context *context) {
   // send_eoi();
 
   // global_counter = 0;
+  //  printf("%d ", global_counter++);
+
+  // printf("%d ", 0);
+
+  printf("%p ", get_esp());
+
+  sti();
+  // inf_loop();
 
   return;
 }
@@ -222,6 +230,11 @@ void print_panic(interrupt_context *context) {
                context->eflags);
 }
 
+void gp_handler(interrupt_context *context) {
+  print_panic(context);
+  inf_loop();
+}
+
 void start_process(void *user_program, void *stack) {
   user_context us_context;
   us_context.context.cs = 0x1b; // ind = 11, gdt, pl=11
@@ -241,12 +254,13 @@ void universal_handler(interrupt_context *context) {
   case 0x20:
     // printf("Timer device\n");
     timer_handler(context);
-    sti();
-    inf_loop();
     break;
   case 0x21:
     // printf("Keyboard device\n");
     keyboard_handler(context);
+    break;
+  case 0x13:
+    gp_handler(context);
     break;
   default:
     // printf("Default handler\n");

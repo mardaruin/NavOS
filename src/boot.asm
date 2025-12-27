@@ -85,6 +85,11 @@ read_end:
 
 [BITS 32]
 code_start:
+  mov eax, tss
+  mov word [tss_desc + 2], ax
+  shr eax, 16
+  mov byte [tss_desc + 4], al
+  mov byte [tss_desc + 7], ah
   mov ax, tss_segment
   ltr ax
   

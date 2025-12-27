@@ -43,5 +43,7 @@ extern void pseudo_syscall();
 extern void setup_registers();
 extern void inf_loop();
 extern void sti();
+extern uint32_t get_esp(void);
+extern void not_allowed();
 
 #endif

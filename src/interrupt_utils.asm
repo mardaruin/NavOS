@@ -18,6 +18,22 @@ eflags:
   pop eax
   ret
 
+global get_esp
+get_esp:
+  mov eax, esp
+  ret
+
+global not_allowed
+not_allowed:
+  cli
+  ; in al, dx
+  ; lgdt [eax]
+  ; ligt [eax]
+  ; ltr [eax]
+  ; mov cr0, eax
+  ; inf_loop
+  ret
+
 global cli
 cli:
   cli 
