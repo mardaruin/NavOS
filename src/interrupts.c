@@ -130,8 +130,6 @@ void change_device_status(PIC_DEVICES device, bool enable) {
 
 void disable_device(int device) { change_device_status(device, false); }
 
-int global_counter = 0;
-
 void keyboard_handler(interrupt_context *context) {
   // for experiments
   // print_panic(context);
@@ -157,6 +155,21 @@ static void delay() {
   }
   printf("\n");
 }
+
+int global_counter = 1;
+
+void inf_loop_by_syscall() {
+  for (;;) {
+    syscall_expr(global_counter++);
+  }
+}
+
+int inc_global_counter() {
+  global_counter++;
+  return global_counter;
+}
+
+void zero_global_counter() { global_counter = 0; }
 
 void timer_handler(interrupt_context *context) {
   // for experiments
@@ -188,10 +201,14 @@ void timer_handler(interrupt_context *context) {
 
   // printf("%d ", 0);
 
-  printf("%p ", get_esp());
+  // printf("%p ", get_esp());
 
-  sti();
-  inf_loop();
+  // zero_global_counter();
+  global_counter = 0;
+  //  printf("   HERE TIMER HANDLER   ");
+
+  // sti();
+  //  inf_loop();
 
   return;
 }
@@ -257,14 +274,14 @@ void universal_handler(interrupt_context *context) {
     break;
   case 0x21:
     // printf("Keyboard device\n");
-    keyboard_handler(context);
+    // keyboard_handler(context);
     break;
   case 0xd:
-    gp_handler(context);
+    // gp_handler(context);
     break;
   default:
-    printf("Default handler\n");
-    print_panic(context);
+    // printf("Default handler\n");
+    // print_panic(context);
     break;
   }
 }

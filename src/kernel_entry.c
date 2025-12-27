@@ -75,20 +75,21 @@ void six_lab(void) {
   // inf_loop();
 }
 
-int gl_counter = 0;
-
 void user_program(void) {
   // printf("User process\n");
 
   // printf("%d ", gl_counter++);
 
-  // while (true) {
-  //   printf("%d ", gl_counter++);
-  // }
+  while (true) {
+    printf("%d ", inc_global_counter());
+  }
+
+  // code_segment_desc &= ~((uint64_t)1 << 47ma); // p = 0
+  // inf_loop_by_syscall();
 
   // printf("%p ", get_esp());
 
-  not_allowed();
+  // not_allowed();
 
-  inf_loop();
+  // inf_loop();
 }

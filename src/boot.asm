@@ -160,20 +160,21 @@ gdt_descriptor:
 align 8       ; выравнивание
 gdt:
   dq 0                    ; по стандарту первая запись в gdt всегда должна быть 0
-; кодовый сегмент 
+.code_segment_desc:
   dw 0xffff               ; low limit - максимальный размер сегмента
   dw 0                    ; low base address
   db 0                    ; middle base address
   db 0b10011010           ; access bytes - p=1, dpl=00, s=1, type=1010 
   db 0b11001111           ; granularity byte - g=1, db=1, l=0, avl=0, high bits of the limit=1111 
   db 0                    ; high base address
-; сегмент данных
+.data_segment_desc:
   dw 0xffff               ; low limit - максимальный размер сегмента
   dw 0                    ; low base address
   db 0                    ; middle base address
   db 0b10010010           ; access bytes - p=1, dpl=00, s=1, type=0010 
   db 0b11001111           ; granularity byte - g=1, db=1, l=0, avl=0, high bits of the limit=1111 
   db 0x0                  ; high base address
+.user_code_segment_desc:
 ; code segment with dpl = 3
   dw 0xffff               ; low limit - максимальный размер сегмента
   dw 0                    ; low base address
@@ -181,6 +182,7 @@ gdt:
   db 0b11111010           ; access bytes - p=1, dpl=11, s=1, type=1010 
   db 0b11001111           ; granularity byte - g=1, db=1, l=0, avl=0, high bits of the limit=1111 
   db 0                    ; high base address
+.user_data_segment_desc:
 ; data segment with dpl = 3
   dw 0xffff               ; low limit - максимальный размер сегмента
   dw 0                    ; low base address

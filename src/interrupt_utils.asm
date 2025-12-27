@@ -23,6 +23,12 @@ get_esp:
   mov eax, esp
   ret
 
+global syscall_expr
+syscall_expr:
+    mov eax, dword [esp + 4]
+    int 0x30
+    ret
+
 global not_allowed
 not_allowed:
   cli

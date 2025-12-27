@@ -133,5 +133,8 @@ void send_eoi();
 void set_device(uint8_t device);
 void inf_loop_with_inc();
 void start_process(void *user_program, void *stack);
+int inc_global_counter();
+extern void syscall_expr(int expr);
+void inf_loop_by_syscall();
 
 #endif

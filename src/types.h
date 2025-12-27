@@ -45,5 +45,6 @@ extern void inf_loop();
 extern void sti();
 extern uint32_t get_esp(void);
 extern void not_allowed();
+extern uint64_t code_segment_desc;
 
 #endif
