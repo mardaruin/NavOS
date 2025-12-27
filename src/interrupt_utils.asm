@@ -74,8 +74,7 @@ pseudo_syscall:
 
 global collect_context_without_error_code
 collect_context_without_error_code:
-  push 0
-  jmp collect_context
+  push dword [esp]
 
 
 global collect_context
