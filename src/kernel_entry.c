@@ -68,6 +68,7 @@ void fifth_lab(void) {
 
 void six_lab(void) {
   init_idt(INTERRUPT_GATE);
+  setup_registers();
   setup8259(true);
   // set_device(DEVICE_MASK_TIMER);
   uint8_t *stack = malloc_undead(STACK_SIZE, ALIGNMENT_VALUE) + STACK_SIZE;
@@ -75,8 +76,14 @@ void six_lab(void) {
   // inf_loop();
 }
 
+int gl_counter = 0;
+
 void user_program(void) {
-  printf("User process\n");
+  // printf("User process\n");
+
+  while (true) {
+    printf("%d ", gl_counter++);
+  }
 
   // inf_loop();
 }

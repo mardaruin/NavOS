@@ -224,15 +224,15 @@ void print_panic(interrupt_context *context) {
 
 void start_process(void *user_program, void *stack) {
   user_context us_context;
-  us_context.context.cs = 0x1b;
-  us_context.context.ds = 0x23;
-  us_context.context.es = 0x23;
-  us_context.context.fs = 0x23;
-  us_context.context.gs = 0x23;
+  us_context.context.cs = 0x1b; // ind = 11, gdt, pl=11
+  us_context.context.ds = 0x23; // ind = 100, gdt, pl=11
+  us_context.context.es = 0x23; // ind = 100, gdt, pl=11
+  us_context.context.fs = 0x23; // ind = 100, gdt, pl=11
+  us_context.context.gs = 0x23; // ind = 100, gdt, pl=11
   us_context.context.eip = (uint32_t)user_program;
   us_context.esp = (uint32_t)stack;
   us_context.context.eflags = (eflags() & ~(0x11 << 12) | (1 << 9));
-  us_context.ss = 0x23;
+  us_context.ss = 0x23; // ind = 100, gdt, pl=11
   restore_context(&us_context);
 }
 

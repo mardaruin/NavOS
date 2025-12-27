@@ -85,8 +85,9 @@ read_end:
 
 [BITS 32]
 code_start:
-  mov ax, tss_desc 
+  mov ax, tss_segment
   ltr ax
+  
 
   mov ax, data_segment
   mov ds, ax
@@ -142,7 +143,7 @@ tss:
   .ldt_selector:       dw 0
   .reserved9:          dw 0
   .debug_trap:         dw 0
-  .io_map_base:        dw 108 + 32 
+  .io_map_base:        dw 108
   .ssp:                dd 0
 
 
@@ -190,6 +191,10 @@ tss_desc:
   db 0                    ; granularity byte - g=0, db=0, l=0, avl=0, high bits of the limit=0000
   db 0                    ; high base address
 gdt_end:
+
+
+tss_segment equ 40        ; ind = 101, gdt, pl=00
+
 
 null_segment equ 0
 code_segment equ 0x08
