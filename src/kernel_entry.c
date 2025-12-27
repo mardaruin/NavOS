@@ -82,13 +82,13 @@ void user_program(void) {
 
   // printf("%d ", gl_counter++);
 
-  while (true) {
-    printf("%d ", gl_counter++);
-  }
+  // while (true) {
+  //   printf("%d ", gl_counter++);
+  // }
 
   // printf("%p ", get_esp());
 
-  // not_allowed();
+  not_allowed();
 
-  // inf_loop();
+  inf_loop();
 }

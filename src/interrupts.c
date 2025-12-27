@@ -244,8 +244,10 @@ void start_process(void *user_program, void *stack) {
   us_context.context.gs = 0x23; // ind = 100, gdt, pl=11
   us_context.context.eip = (uint32_t)user_program;
   us_context.esp = (uint32_t)stack;
-  us_context.context.eflags = (eflags() & ~(0x11 << 12) | (1 << 9));
+  us_context.context.eflags = ((eflags() & ~(0b11 << 12)) | (1 << 9));
   us_context.ss = 0x23; // ind = 100, gdt, pl=11
+  // printf("%x ", us_context.context.eflags);
+  // inf_loop();
   restore_context(&us_context);
 }
 
@@ -263,8 +265,8 @@ void universal_handler(interrupt_context *context) {
     gp_handler(context);
     break;
   default:
-    // printf("Default handler\n");
-    // print_panic(context);
+    printf("Default handler\n");
+    print_panic(context);
     break;
   }
 }
